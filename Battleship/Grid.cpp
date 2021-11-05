@@ -8,10 +8,6 @@ CGrid::CGrid(const Point& _origin, short _width, short _height)
 {
 	m_tiles = new CTile[m_width * m_height];
 	const short max = m_width * m_height;
-//	for (short i = 0; i < max; ++i)
-//	{
-//		m_tiles[i] = Tile(); // TODO double check if this is copied
-//	}
 }
 
 CGrid::~CGrid()
@@ -77,6 +73,62 @@ CTile& CGrid::GetNthFreeTile(short n) const
 			--n;
 		}
 	}
+	return m_tiles[0];//CTile::Null; // TDOD fix w/ equivalent of null
+}
+
+
+bool CGrid::IsRegionEmpty(short _x, short _y, short _width, short _height)
+{
+	if (!IsRegionInBounds(_x, _y, _width, _height))
+	{
+		return false;
+	}
+	for (short i = 0; i < _width; ++i)
+	{
+		for (short j = 0; j < _height; ++j)
+		{
+			if (m_tiles[Index(_x + i, _y + j)].Type() != 1)
+			{
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+bool CGrid::TryToPlaceShip(short _x, short _y, short _width, short _height, short _type)
+{
+	bool swap = rand() % 2 == 1;
+	short width = swap ? _height : _width;
+	short height = swap ? _width : _height;
+	return IsRegionEmpty(_x, _y, width, height) && FillRegion(_x, _y, width, height, _type)
+		|| IsRegionEmpty(_x, _y, height, width) && FillRegion(_x, _y, height, width, _type);
+}
+
+bool CGrid::FillRegion(short _x, short _y, short _width, short _height, short _type)
+{
+	if (!IsRegionInBounds(_x, _y, _width, _height))
+	{
+		return false;
+	}
+	for (short i = 0; i < _width; ++i)
+	{
+		for (short j = 0; j < _height; ++j)
+		{
+			SetTile(_x + i, _y + j, _type);
+		}
+	}
+	return true;
+}
+
+bool CGrid::IsInBounds(short x, short y) const
+{
+	return x >= 0 && x < m_width&& y >= 0 && y < m_height;
+}
+
+bool CGrid::IsRegionInBounds(short _x, short _y, short _width, short _height) const
+{
+	return IsInBounds(_x, _y) && IsInBounds(_x + _width - 1, _y + _height - 1);
 }
 
 void CGrid::Display() const
@@ -91,4 +143,4 @@ void CGrid::Display() const
 		}
 	}
 	ResetConsoleText();
-}
+

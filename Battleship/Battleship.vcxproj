@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Console.cpp" />
+    <ClCompile Include="Controller.cpp" />
     <ClCompile Include="Display.cpp" />
     <ClCompile Include="ControllerAI.cpp" />
     <ClCompile Include="Grid.cpp" />
@@ -149,6 +150,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Console.h" />
+    <ClInclude Include="Controller.h" />
     <ClInclude Include="Display.h" />
     <ClInclude Include="ControllerAI.h" />
     <ClInclude Include="Grid.h" />

@@ -28,11 +28,16 @@ public:
 	short Height() const;
 	const Point& Origin() const;
 	CTile& GetTile(short _x, short _y) const;
-	void SetTile(short _x, short _y, const CTile& _tile); // TODO delete?
+	void SetTile(short _x, short _y, const CTile& _tile);
 	void HitTile(short _x, short _y);
 	bool CanHitTile(short _x, short _y) const;
 	short GetFreeTiles() const;
 	CTile& GetNthFreeTile(short num) const;
+	bool IsRegionEmpty(short x, short y, short width, short length);
+	bool FillRegion(short _x, short _y, short _width, short _length, short type);
+	bool TryToPlaceShip(short _x, short _y, short _width, short _height, short _type);
+	bool IsInBounds(short x, short y) const;
+	bool IsRegionInBounds(short _x, short _y, short _width, short _height) const;
 	void Display() const;
 private:
 	short m_width, m_height;
