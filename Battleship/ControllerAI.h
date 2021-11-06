@@ -7,13 +7,11 @@ class CControllerAI : public CController
 {
 
 public:
-	CControllerAI(CGrid _grid);
+	CControllerAI(CGrid& _grid);
 	~CControllerAI();
-	void Turn(CGrid& oponentGrid) const;
+	void Turn(CController& _opponent);
 private:
 	Point* m_lastHit = nullptr;
-
 	void PickRandom(CGrid& opponentGrid) const;
-
 };
 

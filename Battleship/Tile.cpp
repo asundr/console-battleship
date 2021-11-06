@@ -35,13 +35,21 @@ short  CTile::GetColour() const
 	{
 		return 0x38; //0x18
 	}
+	else if (m_type == -1)
+	{
+		return 0x10;
+	}
 	else if (m_type == 9)
 	{
 		return 0x20;
 	}
-	else if (m_type == -8)
+	else if (m_type == 8)
 	{
 		return 0x40;
+	}
+	else if (m_type < 0)
+	{
+		return 0xC0;
 	}
 	else
 	{
@@ -58,7 +66,10 @@ void CTile::Draw(short x, short y) const
 		for (short dx = 0; dx < s_width; ++dx)
 		{
 			//std::cout << ' ';
-			std::cout << m_type;
+			std::cout <<  abs((int)m_type);
 		}
 	}
 }
+
+CTile CTile::s_selectorTile = CTile(9);
+CTile CTile::s_errorTile = CTile(8);

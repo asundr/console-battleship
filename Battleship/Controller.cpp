@@ -12,6 +12,11 @@ CController::~CController()
 
 }
 
+CGrid& CController::Grid()
+{
+	return m_grid;
+}
+
 void CController::PlaceShipsRandom()
 {
 	for (short i = m_shipCount - 1; i >= 0; --i)	// TODO WIP
@@ -25,3 +30,4 @@ void CController::PlaceShipsRandom()
 		}
 	}
 }
+

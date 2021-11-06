@@ -42,7 +42,7 @@ void CGrid::SetTile(short _x, short _y, const CTile& _tile)
 
 void CGrid::HitTile(short _x, short _y)
 {
-	++ m_hitCount;
+	++m_hitCount;
 	m_tiles[Index(_x, _y)].Hit();
 }
 
@@ -56,7 +56,7 @@ short CGrid::GetFreeTiles() const
 	return m_width * m_height - m_hitCount;
 }
 
-CTile& CGrid::GetNthFreeTile(short n) const
+void CGrid::HitNthFreeTile(short n)
 {
 	for (short i = 0; i < m_width * m_height; ++i)
 	{
@@ -66,14 +66,17 @@ CTile& CGrid::GetNthFreeTile(short n) const
 		}
 		else if (n == 0)
 		{
-			return m_tiles[i];
+			//return m_tiles[i];
+			++m_hitCount;
+			m_tiles[i].Hit();
+			return;
 		}
 		else
 		{
 			--n;
 		}
 	}
-	return m_tiles[0];//CTile::Null; // TDOD fix w/ equivalent of null
+	//return m_tiles[0];//CTile::Null; // TDOD fix w/ equivalent of null
 }
 
 // Attemps to perform an repeated action over a line of tiles, returns true if every action successful
@@ -103,6 +106,24 @@ void CGrid::ActionOverRegion(void (*action)(CGrid&, CTile&,short,short), short _
 			action(*this, m_tiles[Index(i, j)], i, j);
 		}
 	}
+}
+
+void CGrid::RevertTiles(short _x, short _y, short _width, short _height) 
+{
+	ActionOverRegion([](CGrid& _grid, CTile& tile, short x, short y) -> void { _grid.DrawTileAt(x, y, tile); },
+		_x, _y, _width, _height);
+}
+
+void CGrid::DrawSelection(short _x, short _y, short _width, short _height)
+{
+	ActionOverRegion([](CGrid& _grid, CTile& tile, short x, short y) -> void { _grid.DrawTileAt(x, y, CTile::s_selectorTile); },
+		_x, _y, _width, _height);
+}
+
+void CGrid::DrawSelectionError(short _x, short _y, short _width, short _height)
+{
+	ActionOverRegion([](CGrid& _grid, CTile& tile, short x, short y) -> void { _grid.DrawTileAt(x, y, CTile::s_errorTile); },
+		_x, _y, _width, _height);
 }
 
 bool CGrid::IsRegionEmpty(short _x, short _y, short _width, short _height) const

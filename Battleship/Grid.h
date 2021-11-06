@@ -32,9 +32,12 @@ public:
 	void HitTile(short _x, short _y);
 	bool CanHitTile(short _x, short _y) const;
 	short GetFreeTiles() const;
-	CTile& GetNthFreeTile(short num) const;
+	void HitNthFreeTile(short num);
 	bool ActionOverTiles(bool (*action)(CTile&), short x, short y, short dx, short dy, short steps); // TODO delete?
 	void ActionOverRegion(void (*action)(CGrid&, CTile&, short, short), short _x, short _y, short _width, short _height);
+	void RevertTiles(short _x, short _y, short _width, short _height);
+	void DrawSelection(short _x, short _y, short _width, short _height);
+	void DrawSelectionError(short _x, short _y, short _width, short _height);
 	bool IsRegionEmpty(short x, short y, short width, short length) const;
 	bool FillRegion(short _x, short _y, short _width, short _length, short type);
 	bool TryToPlaceShip(short _x, short _y, short _width, short _height, short _type);

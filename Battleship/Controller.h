@@ -7,6 +7,7 @@ class CController
 public:
 	CController(const CGrid& _grid);
 	~CController();
+	CGrid& Grid();
 	void PlaceShipsRandom();
 protected:
 	short m_shipCount = 5;

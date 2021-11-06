@@ -18,6 +18,8 @@ public:
 	void Hit();
 	bool CanHit() const;
 	void Draw(short x, short y) const;
+	static CTile s_selectorTile;
+	static CTile s_errorTile;
 private:
 	short m_type = 1;
 	short GetColour() const;
