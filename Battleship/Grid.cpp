@@ -43,7 +43,7 @@ void CGrid::SetTile(short _x, short _y, const CTile& _tile)
 void CGrid::HitTile(short _x, short _y)
 {
 	++ m_hitCount;
-	
+	m_tiles[Index(_x, _y)].Hit();
 }
 
 bool CGrid::CanHitTile(short _x, short _y) const
@@ -76,8 +76,36 @@ CTile& CGrid::GetNthFreeTile(short n) const
 	return m_tiles[0];//CTile::Null; // TDOD fix w/ equivalent of null
 }
 
+// Attemps to perform an repeated action over a line of tiles, returns true if every action successful
+bool CGrid::ActionOverTiles(bool (*action)(CTile&), short x, short y, short dx, short dy, short steps) // TODO delete?
+{
+	if (!IsInBounds(x, y) || !IsInBounds(x + dx * steps, y + dy * steps))
+	{
+		return false;
+	}
 
-bool CGrid::IsRegionEmpty(short _x, short _y, short _width, short _height)
+	bool valid = true;
+	for (short i = 0; valid && i < steps; ++i, x += dx, y += dy)
+	{
+		valid = action(GetTile(x, y));
+	}
+	return valid;
+}
+
+void CGrid::ActionOverRegion(void (*action)(CGrid&, CTile&,short,short), short _x, short _y, short _width, short _height)
+{
+	for (short r = 0; r < _height; ++r)
+	{
+		for (short c = 0; c < _width; ++c)
+		{
+			short i = _x + c;
+			short j = _y + r;
+			action(*this, m_tiles[Index(i, j)], i, j);
+		}
+	}
+}
+
+bool CGrid::IsRegionEmpty(short _x, short _y, short _width, short _height) const
 {
 	if (!IsRegionInBounds(_x, _y, _width, _height))
 	{
@@ -137,10 +165,18 @@ void CGrid::Display() const
 	{
 		for (short x = 0; x < m_width; ++x)
 		{
-			short dispX = m_origin.x + x * CTile::s_width;
-			short dispY = m_origin.y + y * CTile::s_height;
-			m_tiles[Index(x, y)].Draw(dispX, dispY); 
+			//short dispX = m_origin.x + x * CTile::s_width;
+			//short dispY = m_origin.y + y * CTile::s_height;
+			//m_tiles[Index(x, y)].Draw(dispX, dispY); 
+			DrawTileAt(x, y, m_tiles[Index(x, y)]);
 		}
 	}
 	ResetConsoleText();
+}
 
+void CGrid::DrawTileAt(short _x, short _y, CTile& _tile) const
+{
+	short dispX = m_origin.x + _x * CTile::s_width;
+	short dispY = m_origin.y + _y * CTile::s_height;
+	_tile.Draw(dispX, dispY);
+}

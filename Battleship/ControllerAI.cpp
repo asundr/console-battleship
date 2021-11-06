@@ -3,9 +3,9 @@
 #include <cstdlib>
 #include "Tile.h"
 
-CControllerAI::CControllerAI()
+CControllerAI::CControllerAI(CGrid _grid) : CController(_grid)
 {
-
+	
 }
 
 CControllerAI::~CControllerAI()
@@ -24,3 +24,4 @@ void CControllerAI::PickRandom(CGrid& opponentGrid) const
 	CTile tile = opponentGrid.GetNthFreeTile(index);
 	tile.Hit();
 }
+

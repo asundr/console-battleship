@@ -1,10 +1,9 @@
 #pragma once
 
-enum class TileType
+enum class TileType // TODO
 {
 	EMPTY = 1,
-	MISS = -1,
-
+	MISS = -1
 };
 
 class CTile
@@ -12,6 +11,7 @@ class CTile
 public:
 	static const short s_height = 3;
 	static const short s_width = 2 * s_height;
+	static const CTile Null;
 	CTile(short _type = 1);
 	~CTile();
 	short Type() const;

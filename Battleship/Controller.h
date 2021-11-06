@@ -8,7 +8,7 @@ public:
 	CController(const CGrid& _grid);
 	~CController();
 	void PlaceShipsRandom();
-private:
+protected:
 	short m_shipCount = 5;
 	short m_ships[5] = { 2, 3, 3, 4, 5 };
 	CGrid m_grid;

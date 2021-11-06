@@ -1,12 +1,13 @@
 #pragma once
 
+#include "Controller.h"
 #include "Grid.h"
 
-class CControllerAI
+class CControllerAI : public CController
 {
 
 public:
-	CControllerAI();
+	CControllerAI(CGrid _grid);
 	~CControllerAI();
 	void Turn(CGrid& oponentGrid) const;
 private:
