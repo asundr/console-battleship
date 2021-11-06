@@ -40,7 +40,7 @@ public:
 	void DrawSelectionError(short _x, short _y, short _width, short _height);
 	bool IsRegionEmpty(short x, short y, short width, short length) const;
 	bool FillRegion(short _x, short _y, short _width, short _length, short type);
-	bool TryToPlaceShip(short _x, short _y, short _width, short _height, short _type);
+	bool TryToPlaceShip(short _x, short _y, short _width, short _height, short _type, bool _randomOrientation = false);
 	bool IsInBounds(short x, short y) const;
 	bool IsRegionInBounds(short _x, short _y, short _width, short _height) const;
 	void Display() const;

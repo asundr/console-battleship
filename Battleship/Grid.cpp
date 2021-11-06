@@ -145,9 +145,9 @@ bool CGrid::IsRegionEmpty(short _x, short _y, short _width, short _height) const
 	return true;
 }
 
-bool CGrid::TryToPlaceShip(short _x, short _y, short _width, short _height, short _type)
+bool CGrid::TryToPlaceShip(short _x, short _y, short _width, short _height, short _type, bool _randomOrientation)
 {
-	bool swap = rand() % 2 == 1;
+	bool swap = _randomOrientation && (rand() % 2 == 1);
 	short width = swap ? _height : _width;
 	short height = swap ? _width : _height;
 	return IsRegionEmpty(_x, _y, width, height) && FillRegion(_x, _y, width, height, _type)

@@ -117,7 +117,14 @@ void CPlayer::PlaceShips()
 {
 	for (short i = m_shipCount - 1; i >= 0; --i)
 	{
-		SetSelectorBounds(m_selector.x, m_selector.y, 1, m_ships[i]);
+		if (m_selectorBounds.x < m_selectorBounds.y)
+		{
+			SetSelectorBounds(m_selector.x, m_selector.y, 1, m_ships[i]);
+		}
+		else
+		{
+			SetSelectorBounds(m_selector.x, m_selector.y, m_ships[i], 1);
+		}
 		while (! HandleSelctionInput(i + 2));
 	}
 	SetSelectorBounds(0, 0, 0, 0);
@@ -140,7 +147,7 @@ bool CPlayer::HandleSelctionInput(short _value, CGrid& _grid)
 				return true;
 			}
 		}
-		else if (_grid.TryToPlaceShip(m_selector.x, m_selector.y, m_selectorBounds.x, m_selectorBounds.y, _value))
+		else if (_grid.TryToPlaceShip(m_selector.x, m_selector.y, m_selectorBounds.x, m_selectorBounds.y, _value, false))
 		{
 			return true;
 		}
