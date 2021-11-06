@@ -106,12 +106,6 @@ void CPlayer::DrawSelection(CGrid& _grid) const
 	}
 }
 
-//void CPlayer::ResetSelector(CGrid& _grid)
-//{
-//	RevertTiles(_grid);
-//	m_selector = { 0,0 };
-//	m_selectorBounds = { 0,0 };
-//}
 
 void CPlayer::PlaceShips()
 {

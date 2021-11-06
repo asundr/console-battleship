@@ -19,7 +19,6 @@ public:
 	bool ToggleSelectorRotation();
 	void RevertTiles(CGrid& _grid);
 	void DrawSelection(CGrid& _grid) const;
-	//void ResetSelector(CGrid& _grid);
 	void PlaceShips();
 	bool HandleSelctionInput(short _value);
 	bool HandleSelctionInput(short _value, CGrid& _grid);
