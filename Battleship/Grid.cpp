@@ -202,3 +202,12 @@ void CGrid::DrawTileAt(short _x, short _y, CTile& _tile) const
 	short dispY = m_origin.y + _y * CTile::s_height;
 	_tile.Draw(dispX, dispY);
 }
+
+void CGrid::Reset()
+{
+	selector = nullptr;
+	for (int i = m_width * m_height - 1; i >= 0; --i)
+	{
+		m_tiles[i] = CTile();
+	}
+}

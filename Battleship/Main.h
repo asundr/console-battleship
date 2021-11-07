@@ -1,5 +1,13 @@
 #pragma once
 
+#include "Player.h"
+#include "ControllerAI.h"
+#include "Textbox.h"
+
+void InitializeGame();
+void PlayGame(CPlayer& _player, CControllerAI& _ai, CTextbox& _textbox);
+void SetupShips(CPlayer& _player, CControllerAI& _ai, CTextbox& _textbox);
+void ResetGame(CPlayer& _player, CControllerAI& _ai);
 
 const std::string Credit_List[] =
 {

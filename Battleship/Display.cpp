@@ -1,7 +1,6 @@
 #include <string>
 #include <iostream>
 #include "Console.h"
-#include "Textbox.h"
 #include "Display.h"
 
 // Draws a column from a 6x5 pixel letter represented by the last 30 bits of an integer
@@ -117,7 +116,7 @@ void FillBorder(Bounds bounds, int colour)
 // Draws a Reel using it's current poition
 void DrawReel(Reel& reel, Bounds& bounds)
 {
-	for (int i = 0; i < bounds.y_len; ++i)
+	for (short i = 0; i < bounds.y_len; ++i)
 	{
 		int index = ((reel.position + i) / reel.digitHeight) % reel.length + 2; // the displayed number
 		int row = (reel.position + i) % reel.digitHeight;
@@ -312,14 +311,14 @@ Machine BuildMachine(int startingChips)
 	int reelWidth = 6 + 2 * r1.padding;
 	int windowWidth = 4 + 3 * reelWidth;
 	Bounds reelWindow = { machineBounds.x + 6, machineBounds.y + 2, windowWidth, 15 };
-	FillBorder({ reelWindow.x - 1, 12, windowWidth + 2, 15 }, 0xF);
+	//FillBorder({ reelWindow.x - 1, 12, windowWidth + 2, 15 }, 0xF);
 
 	for (int i = 0; i < Reel_Count; ++i)
 	{
 		Reel& r = *reels[i];
-		r.bounds = { reelWindow.x + i * (2 + reelWidth), reelWindow.y, 8, reelWindow.y_len };
-		r.position = rand() % r.steps;
-		DrawReel(r, r.bounds);
+		//r.bounds = { reelWindow.x + i * (2 + reelWidth), reelWindow.y, 8, reelWindow.y_len };
+		//r.position = rand() % r.steps;
+		//DrawReel(r, r.bounds);
 	}
 
 	Bounds reelBorderBounds = { reelWindow.x - 2, reelWindow.y - 1, reelWindow.x_len + 4, reelWindow.y_len + 2 };

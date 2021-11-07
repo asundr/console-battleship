@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Grid.h"
+#include "Textbox.h"
 
 // Each bit represents a pixel for a 6x5 number
 const int Digit_Masks[] =
@@ -73,7 +73,7 @@ enum class Outcome
 
 struct Bounds
 {
-	int x = 0, y = 0, x_len = 1, y_len = 1;
+	short x = 0, y = 0, x_len = 1, y_len = 1;
 };
 
 struct Reel

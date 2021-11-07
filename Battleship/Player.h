@@ -8,7 +8,7 @@ class CPlayer : public CController
 public:
 	CPlayer(CGrid& _grid);
 	~CPlayer();
-	void Turn(CController& _opponent);
+	bool Turn(CController& _opponent);
 	void SetSelectorBounds(CGrid& _grid, short _x, short _y, short _width, short _height);
 	void SetSelectorBounds(short _x, short _y, short _width, short _height);
 	bool SetSelector(Point& _coord, CGrid& _grid);
@@ -20,8 +20,8 @@ public:
 	void RevertTiles(CGrid& _grid);
 	void DrawSelection(CGrid& _grid) const;
 	void PlaceShips();
-	bool HandleSelctionInput(short _value);
-	bool HandleSelctionInput(short _value, CController& _opponent);
+	short HandleSelctionInput(short _value);
+	short HandleSelctionInput(short _value, CController& _opponent);
 private:
 	Point m_selector = { 0, 0 };
 	Point m_selectorBounds = { 0, 0 };

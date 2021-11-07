@@ -36,6 +36,7 @@ public:
 	bool IsRegionInBounds(short _x, short _y, short _width, short _height) const;
 	void Display() const;
 	void DrawTileAt(short _x, short _y, CTile& _tile) const;
+	void Reset();
 private:
 	short m_width, m_height;
 	Point m_origin;

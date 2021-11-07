@@ -13,14 +13,15 @@ CControllerAI::~CControllerAI()
 
 }
 
-void CControllerAI::Turn(CController& _opponent)
+bool CControllerAI::Turn(CController& _opponent)
 {
-	HitRandom(_opponent);
+	short type = HitRandom(_opponent);
+	return _opponent.UpdateShips(type);
 }
 
-void CControllerAI::HitRandom(CController& _opponent) const
+short CControllerAI::HitRandom(CController& _opponent) const
 {
 	short index = rand() % _opponent.Grid().GetFreeTiles();
-	_opponent.Grid().HitNthFreeTile(index);
+	return _opponent.Grid().HitNthFreeTile(index);
 }
 

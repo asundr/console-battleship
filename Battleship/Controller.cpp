@@ -4,7 +4,7 @@
 
 CController::CController(const CGrid& _grid) : m_grid(_grid)
 {
-
+	Reset();
 }
 
 CController::~CController()
@@ -33,18 +33,46 @@ void CController::PlaceShipsRandom()
 
 #include <iostream> // TODO remove
 
-void CController::UpdateShips(short _type)
+// Updates ship lives and returns true if all ships have been lost
+bool CController::UpdateShips(short _type)
 {
 	if (_type < 2 || _type > 6)
 	{
-		return;
+		return false;
 	}
 	short& typeCount = m_ships[_type - 2];
 	--typeCount;
 	std::cout << m_ships[_type - 2];
 	if (typeCount == 0)
 	{
-		// output "destroyed ship"
+		std::cout << "Ship " << _type << " destroyed!" << std::endl;
+		if (HasLostAllShips())
+		{
+			//std::cout << "VICOTRY\n";
+			return true;
+		}
 	}
-	//check if all ships destroyed -> loss/win
+	return false;
+}
+
+// Returns true if all ships have been lost
+bool CController::HasLostAllShips() const
+{
+	for (short count : m_ships)
+	{
+		if (count > 0)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+void CController::Reset()
+{
+	static short ships[] = { 2, 3, 3, 4, 5 };
+	for (short i = 0; i < m_shipCount; ++i)
+	{
+		m_ships[i] = ships[i];
+	}
 }

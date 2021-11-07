@@ -4,8 +4,7 @@
 #define __Point__
 struct Point
 {
-	int x;
-	int y;
+	short x, y;
 };
 #endif
 

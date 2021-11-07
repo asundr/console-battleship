@@ -9,9 +9,9 @@ class CControllerAI : public CController
 public:
 	CControllerAI(CGrid& _grid);
 	~CControllerAI();
-	void Turn(CController& _opponent);
+	bool Turn(CController& _opponent);
 private:
 	Point* m_lastHit = nullptr;
-	void HitRandom(CController& _opponent) const;
+	short HitRandom(CController& _opponent) const;
 };
 

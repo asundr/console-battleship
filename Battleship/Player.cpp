@@ -10,15 +10,18 @@ CPlayer::~CPlayer()
 
 }
 
-void CPlayer::Turn(CController& _opponent)
+bool CPlayer::Turn(CController& _opponent)
 {
 	//CGrid& oGrid = _opponent.Grid();
 	SetSelectorBounds(_opponent.Grid(), m_selector.x, m_selector.y, 1, 1);
-	while (!HandleSelctionInput(0, _opponent))
+	short type;
+	do
 	{
-		//_cprintf("X");
-	}
+		type = HandleSelctionInput(0, _opponent);
+	} while (!type);
+	return _opponent.UpdateShips(type);
 }
+
 
 void CPlayer::SetSelectorBounds(CGrid& _grid, short _x, short _y, short _width, short _height)
 {
@@ -124,7 +127,7 @@ void CPlayer::PlaceShips()
 	SetSelectorBounds(0, 0, 0, 0);
 }
 
-bool CPlayer::HandleSelctionInput(short _value, CController& _controller)
+short CPlayer::HandleSelctionInput(short _value, CController& _controller)
 {	
 	CGrid& grid = _controller.Grid();
 	int input = _getch();
@@ -132,20 +135,20 @@ bool CPlayer::HandleSelctionInput(short _value, CController& _controller)
 	{
 		ToggleSelectorRotation(grid);
 	}
-	else if (input == 13 || input == 32)
+	else if (input == 32)
 	{
 		if (_value == 0)
 		{
 			if (grid.CanHitTile(m_selector.x, m_selector.y))
 			{
-				short type = grid.HitTile(m_selector.x, m_selector.y);
-				UpdateShips(type);
-				return true;
+				return grid.HitTile(m_selector.x, m_selector.y);
+				//_controller.UpdateShips(type);
+				//return true;
 			}
 		}
 		else if (grid.TryToPlaceShip(m_selector.x, m_selector.y, m_selectorBounds.x, m_selectorBounds.y, _value, false))
 		{
-			return true;
+			return _value; //return true;
 		}
 	}
 	else
@@ -166,10 +169,10 @@ bool CPlayer::HandleSelctionInput(short _value, CController& _controller)
 		}
 		ShiftSelector(dx, grid);
 	}
-	return false;
+	return 0; // return false;
 }
 
-bool CPlayer::HandleSelctionInput(short _value)
+short CPlayer::HandleSelctionInput(short _value)
 {
 	return HandleSelctionInput(_value, *this);
 }
