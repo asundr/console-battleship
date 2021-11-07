@@ -12,6 +12,6 @@ public:
 	void Turn(CController& _opponent);
 private:
 	Point* m_lastHit = nullptr;
-	void PickRandom(CGrid& opponentGrid) const;
+	void HitRandom(CController& _opponent) const;
 };
 

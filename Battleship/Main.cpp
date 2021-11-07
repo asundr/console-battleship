@@ -5,6 +5,7 @@
 #include "Grid.h"
 #include "Player.h"
 #include "ControllerAI.h"
+#include "Display.h"
 #include "Console.h"
 
 #include "conio.h"
@@ -31,13 +32,16 @@ int main()
 	p1.PlaceShips();
 	g1.Display();
 
+	DrawBorder({ 4, 31, 132, 10 }, 0xD, Border_Tiles_Marquee);
+
 	while (g2.GetFreeTiles() > 0)
 	{
 		p1.Turn(p2);
 		p2.Turn(p1);
 		CursorPos(1, 40);
-		std::cout << p1.Grid().GetFreeTiles();
+		//std::cout << p1.Grid().GetFreeTiles();
 		g1.Display();
+		//tbox.Print(p1.PrintShips());
 	}
 
 	return 0;

@@ -10,15 +10,6 @@ struct Point
 };
 #endif
 
-
-//class CTile
-//{
-////private:
-//public:
-//	short value = 1;
-//};
-
-
 class CGrid
 {
 public:
@@ -29,11 +20,11 @@ public:
 	const Point& Origin() const;
 	CTile& GetTile(short _x, short _y) const;
 	void SetTile(short _x, short _y, const CTile& _tile);
-	void HitTile(short _x, short _y);
+	short HitTile(short _x, short _y);
 	bool CanHitTile(short _x, short _y) const;
 	short GetFreeTiles() const;
-	void HitNthFreeTile(short num);
-	bool ActionOverTiles(bool (*action)(CTile&), short x, short y, short dx, short dy, short steps); // TODO delete?
+	short HitNthFreeTile(short num);
+	//bool ActionOverTiles(bool (*action)(CTile&), short x, short y, short dx, short dy, short steps); // TODO delete?
 	void ActionOverRegion(void (*action)(CGrid&, CTile&, short, short), short _x, short _y, short _width, short _height);
 	void RevertTiles(short _x, short _y, short _width, short _height);
 	void DrawSelection(short _x, short _y, short _width, short _height);

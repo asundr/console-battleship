@@ -40,10 +40,13 @@ void CGrid::SetTile(short _x, short _y, const CTile& _tile)
 	m_tiles[Index(_x, _y)] = _tile;;
 }
 
-void CGrid::HitTile(short _x, short _y)
+short CGrid::HitTile(short _x, short _y)
 {
 	++m_hitCount;
-	m_tiles[Index(_x, _y)].Hit();
+	CTile& tile = m_tiles[Index(_x, _y)];
+	short type = tile.Type();
+	tile.Hit();
+	return type;
 }
 
 bool CGrid::CanHitTile(short _x, short _y) const
@@ -56,44 +59,45 @@ short CGrid::GetFreeTiles() const
 	return m_width * m_height - m_hitCount;
 }
 
-void CGrid::HitNthFreeTile(short n)
+short CGrid::HitNthFreeTile(short n)
 {
-	for (short i = 0; i < m_width * m_height; ++i)
+	for (short r = 0; r < m_height; ++r)
 	{
-		if (!m_tiles[i].CanHit())
+		for (short c = 0; c < m_width; ++c)
 		{
-			continue;
-		}
-		else if (n == 0)
-		{
-			//return m_tiles[i];
-			++m_hitCount;
-			m_tiles[i].Hit();
-			return;
-		}
-		else
-		{
-			--n;
+			CTile& tile = m_tiles[Index(r, c)];
+			if (!tile.CanHit())
+			{
+				continue;
+			}
+			else if (n == 0)
+			{
+				return HitTile(r, c);
+			}
+			else
+			{
+				--n;
+			}
 		}
 	}
-	//return m_tiles[0];//CTile::Null; // TDOD fix w/ equivalent of null
+	return 0;
 }
 
 // Attemps to perform an repeated action over a line of tiles, returns true if every action successful
-bool CGrid::ActionOverTiles(bool (*action)(CTile&), short x, short y, short dx, short dy, short steps) // TODO delete?
-{
-	if (!IsInBounds(x, y) || !IsInBounds(x + dx * steps, y + dy * steps))
-	{
-		return false;
-	}
-
-	bool valid = true;
-	for (short i = 0; valid && i < steps; ++i, x += dx, y += dy)
-	{
-		valid = action(GetTile(x, y));
-	}
-	return valid;
-}
+//bool CGrid::ActionOverTiles(bool (*action)(CTile&), short x, short y, short dx, short dy, short steps) // TODO delete?
+//{
+//	if (!IsInBounds(x, y) || !IsInBounds(x + dx * steps, y + dy * steps))
+//	{
+//		return false;
+//	}
+//
+//	bool valid = true;
+//	for (short i = 0; valid && i < steps; ++i, x += dx, y += dy)
+//	{
+//		valid = action(GetTile(x, y));
+//	}
+//	return valid;
+//}
 
 void CGrid::ActionOverRegion(void (*action)(CGrid&, CTile&,short,short), short _x, short _y, short _width, short _height)
 {
@@ -186,9 +190,6 @@ void CGrid::Display() const
 	{
 		for (short x = 0; x < m_width; ++x)
 		{
-			//short dispX = m_origin.x + x * CTile::s_width;
-			//short dispY = m_origin.y + y * CTile::s_height;
-			//m_tiles[Index(x, y)].Draw(dispX, dispY); 
 			DrawTileAt(x, y, m_tiles[Index(x, y)]);
 		}
 	}

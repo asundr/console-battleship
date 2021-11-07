@@ -15,12 +15,12 @@ CControllerAI::~CControllerAI()
 
 void CControllerAI::Turn(CController& _opponent)
 {
-	PickRandom(_opponent.Grid());
+	HitRandom(_opponent);
 }
 
-void CControllerAI::PickRandom(CGrid& _grid) const
+void CControllerAI::HitRandom(CController& _opponent) const
 {
-	short index = rand() % _grid.GetFreeTiles();
-	_grid.HitNthFreeTile(index);
+	short index = rand() % _opponent.Grid().GetFreeTiles();
+	_opponent.Grid().HitNthFreeTile(index);
 }
 

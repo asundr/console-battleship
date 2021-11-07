@@ -21,7 +21,7 @@ public:
 	void DrawSelection(CGrid& _grid) const;
 	void PlaceShips();
 	bool HandleSelctionInput(short _value);
-	bool HandleSelctionInput(short _value, CGrid& _grid);
+	bool HandleSelctionInput(short _value, CController& _opponent);
 private:
 	Point m_selector = { 0, 0 };
 	Point m_selectorBounds = { 0, 0 };
