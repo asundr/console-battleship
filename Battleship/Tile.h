@@ -23,5 +23,6 @@ public:
 private:
 	short m_type = 1;
 	short GetColour() const;
+	char GetCharacter() const;
 };
 
