@@ -29,15 +29,19 @@ bool CTile::CanHit() const
 	return m_type > 0;
 }
 
-short  CTile::GetColour() const
+short  CTile::GetColour(bool _isVisible) const
 {
+	if (!_isVisible && m_type > 0)
+	{
+		return 0x13;//0x37; //0x87;
+	}
 	if (m_type == 1)
 	{
-		return 0x38; //0x18
+		return 0x13; //0x38; //0x18
 	}
 	else if (m_type == -1)
 	{
-		return 0x13;
+		return 0x17;
 	}
 	else if (m_type == 9)
 	{
@@ -49,23 +53,27 @@ short  CTile::GetColour() const
 	}
 	else if (m_type < 0)
 	{
-		return 0xC0;
+		return 0xC6;//0xC0;
 	}
 	else
 	{
-		return 0x80;
+		return 0x7F; //0x80;
 	}
 }
 
-char CTile::GetCharacter() const
+char CTile::GetCharacter(bool _isVisible) const
 {
+	if (!_isVisible && m_type > 0)
+	{
+		return '\u00EF';
+	}
 	if (abs(m_type) == 1)
 	{
-		return (rand()%2==1) ? '~' : '\u00F7';//'\u00B1';
+		return '\u00EF';
 	}
 	else if (abs(m_type) > 1 && abs(m_type) < 7)
 	{
-		return CanHit() ? '\u00F0' : '*';
+		return CanHit() ? '\u00E9' : '#';
 	}
 	else
 	{
@@ -73,13 +81,13 @@ char CTile::GetCharacter() const
 	}
 }
 
-void CTile::Draw(short x, short y) const	// TODO add visibility param
+void CTile::Draw(short _x, short _y, bool _isVisible) const	// TODO add visibility param
 {
-	SetColour(GetColour());
-	char c = GetCharacter();
+	SetColour(GetColour(_isVisible));
+	char c = GetCharacter(_isVisible);
 	for (short dy = 0; dy < s_height; ++dy)
 	{
-		CursorPos(x, y + dy);
+		CursorPos(_x, _y + dy);
 		for (short dx = 0; dx < s_width; ++dx)
 		{
 			//std::cout << ' ';

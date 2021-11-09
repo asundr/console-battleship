@@ -8,6 +8,7 @@ CGrid::CGrid(const Point& _origin, short _width, short _height)
 {
 	m_tiles = new CTile[m_width * m_height];
 	const short max = m_width * m_height;
+	Reset();
 }
 
 CGrid::~CGrid()
@@ -30,6 +31,11 @@ const Point& CGrid::Origin() const
 	return m_origin;
 }
 
+void CGrid::SetVisible(bool _isVisible)
+{
+	m_visible = _isVisible;
+}
+
 CTile& CGrid::GetTile(short _x, short _y) const
 {
 	return m_tiles[Index(_x, _y)];
@@ -46,6 +52,7 @@ short CGrid::HitTile(short _x, short _y)
 	CTile& tile = m_tiles[Index(_x, _y)];
 	short type = tile.Type();
 	tile.Hit();
+	DrawTileAt(_x, _y, tile, m_visible);
 	return type;
 }
 
@@ -59,20 +66,22 @@ short CGrid::GetFreeTiles() const
 	return m_width * m_height - m_hitCount;
 }
 
-short CGrid::HitNthFreeTile(short n)
+short CGrid::HitNthFreeTile(short n, Point& _hitCoords)
 {
 	for (short r = 0; r < m_height; ++r)
 	{
 		for (short c = 0; c < m_width; ++c)
 		{
-			CTile& tile = m_tiles[Index(r, c)];
+			CTile& tile = m_tiles[Index(c, r)];
 			if (!tile.CanHit())
 			{
 				continue;
 			}
 			else if (n == 0)
 			{
-				return HitTile(r, c);
+				_hitCoords.x = c;
+				_hitCoords.y = r;
+				return HitTile(c, r);
 			}
 			else
 			{
@@ -83,23 +92,7 @@ short CGrid::HitNthFreeTile(short n)
 	return 0;
 }
 
-// Attemps to perform an repeated action over a line of tiles, returns true if every action successful
-//bool CGrid::ActionOverTiles(bool (*action)(CTile&), short x, short y, short dx, short dy, short steps) // TODO delete?
-//{
-//	if (!IsInBounds(x, y) || !IsInBounds(x + dx * steps, y + dy * steps))
-//	{
-//		return false;
-//	}
-//
-//	bool valid = true;
-//	for (short i = 0; valid && i < steps; ++i, x += dx, y += dy)
-//	{
-//		valid = action(GetTile(x, y));
-//	}
-//	return valid;
-//}
-
-void CGrid::ActionOverRegion(void (*action)(CGrid&, CTile&,short,short), short _x, short _y, short _width, short _height)
+void CGrid::ActionOverRegion(void (*action)(CGrid&, CTile&,short,short,bool), short _x, short _y, short _width, short _height)
 {
 	for (short r = 0; r < _height; ++r)
 	{
@@ -107,26 +100,26 @@ void CGrid::ActionOverRegion(void (*action)(CGrid&, CTile&,short,short), short _
 		{
 			short i = _x + c;
 			short j = _y + r;
-			action(*this, m_tiles[Index(i, j)], i, j);
+			action(*this, m_tiles[Index(i, j)], i, j, m_visible);
 		}
 	}
 }
 
 void CGrid::RevertTiles(short _x, short _y, short _width, short _height) 
 {
-	ActionOverRegion([](CGrid& _grid, CTile& tile, short x, short y) -> void { _grid.DrawTileAt(x, y, tile); },
+	ActionOverRegion([](CGrid& _grid, CTile& tile, short x, short y, bool visible) -> void { _grid.DrawTileAt(x, y, tile, visible); },
 		_x, _y, _width, _height);
 }
 
 void CGrid::DrawSelection(short _x, short _y, short _width, short _height)
 {
-	ActionOverRegion([](CGrid& _grid, CTile& tile, short x, short y) -> void { _grid.DrawTileAt(x, y, CTile::s_selectorTile); },
+	ActionOverRegion([](CGrid& _grid, CTile& tile, short x, short y, bool visible) -> void { _grid.DrawTileAt(x, y, CTile::s_selectorTile); },
 		_x, _y, _width, _height);
 }
 
 void CGrid::DrawSelectionError(short _x, short _y, short _width, short _height)
 {
-	ActionOverRegion([](CGrid& _grid, CTile& tile, short x, short y) -> void { _grid.DrawTileAt(x, y, CTile::s_errorTile); },
+	ActionOverRegion([](CGrid& _grid, CTile& tile, short x, short y, bool visible) -> void { _grid.DrawTileAt(x, y, CTile::s_errorTile); },
 		_x, _y, _width, _height);
 }
 
@@ -190,22 +183,24 @@ void CGrid::Display() const
 	{
 		for (short x = 0; x < m_width; ++x)
 		{
-			DrawTileAt(x, y, m_tiles[Index(x, y)]);
+			DrawTileAt(x, y, m_tiles[Index(x, y)], m_visible);
 		}
 	}
 	ResetConsoleText();
 }
 
-void CGrid::DrawTileAt(short _x, short _y, CTile& _tile) const
+void CGrid::DrawTileAt(short _x, short _y, CTile& _tile, bool _isVisible) const
 {
 	short dispX = m_origin.x + _x * CTile::s_width;
 	short dispY = m_origin.y + _y * CTile::s_height;
-	_tile.Draw(dispX, dispY);
+	_tile.Draw(dispX, dispY, _isVisible);
+	ResetConsoleText();
 }
 
 void CGrid::Reset()
 {
 	selector = nullptr;
+	m_hitCount = 0;
 	for (int i = m_width * m_height - 1; i >= 0; --i)
 	{
 		m_tiles[i] = CTile();

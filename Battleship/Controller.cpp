@@ -31,9 +31,7 @@ void CController::PlaceShipsRandom()
 	}
 }
 
-#include <iostream> // TODO remove
-
-// Updates ship lives and returns true if all ships have been lost
+// Updates ship lives and returns true if hit
 bool CController::UpdateShips(short _type)
 {
 	if (_type < 2 || _type > 6)
@@ -42,15 +40,9 @@ bool CController::UpdateShips(short _type)
 	}
 	short& typeCount = m_ships[_type - 2];
 	--typeCount;
-	std::cout << m_ships[_type - 2];
 	if (typeCount == 0)
 	{
-		std::cout << "Ship " << _type << " destroyed!" << std::endl;
-		if (HasLostAllShips())
-		{
-			//std::cout << "VICOTRY\n";
-			return true;
-		}
+		return true;
 	}
 	return false;
 }
@@ -66,6 +58,11 @@ bool CController::HasLostAllShips() const
 		}
 	}
 	return true;
+}
+
+short CController::CountOfType(short _type)
+{
+	return m_ships[_type - 2];
 }
 
 void CController::Reset()

@@ -35,6 +35,15 @@ char GetCharacterAtCursor(short x, short y)
 		: '\0';
 }
 
+short GetColourAtCursor(short x, short y)
+{
+	CHAR_INFO charInfo;
+	SMALL_RECT copyBounds = { x, y, x, y };
+	return ReadConsoleOutput(GetHandle(), &charInfo, { 1,1 }, { 0, 0 }, &copyBounds)
+		? charInfo.Attributes
+		: 0xF;
+}
+
 // Sets the text and background colour using a 2-digit hexadecimal number
 void SetColour(int colour)
 {

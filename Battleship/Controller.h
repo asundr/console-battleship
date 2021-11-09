@@ -11,6 +11,7 @@ public:
 	void PlaceShipsRandom();
 	bool UpdateShips(short _type);
 	bool HasLostAllShips() const;
+	short CountOfType(short _type);
 	void Reset();
 protected:
 	const short m_shipCount = 5;

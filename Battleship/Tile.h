@@ -17,12 +17,12 @@ public:
 	short Type() const;
 	void Hit();
 	bool CanHit() const;
-	void Draw(short x, short y) const;
+	void Draw(short _x, short _y, bool _isVisible = true) const;
 	static CTile s_selectorTile;
 	static CTile s_errorTile;
 private:
 	short m_type = 1;
-	short GetColour() const;
-	char GetCharacter() const;
+	short GetColour(bool _isVisible = true) const;
+	char GetCharacter(bool _isVisible = true) const;
 };
 

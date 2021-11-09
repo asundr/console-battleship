@@ -18,14 +18,14 @@ public:
 	short Width() const;
 	short Height() const;
 	const Point& Origin() const;
+	void SetVisible(bool _isVisible);
 	CTile& GetTile(short _x, short _y) const;
 	void SetTile(short _x, short _y, const CTile& _tile);
 	short HitTile(short _x, short _y);
 	bool CanHitTile(short _x, short _y) const;
 	short GetFreeTiles() const;
-	short HitNthFreeTile(short num);
-	//bool ActionOverTiles(bool (*action)(CTile&), short x, short y, short dx, short dy, short steps); // TODO delete?
-	void ActionOverRegion(void (*action)(CGrid&, CTile&, short, short), short _x, short _y, short _width, short _height);
+	short HitNthFreeTile(short _num, Point& _hitCoords);
+	void ActionOverRegion(void (*action)(CGrid&, CTile&, short, short, bool), short _x, short _y, short _width, short _height);
 	void RevertTiles(short _x, short _y, short _width, short _height);
 	void DrawSelection(short _x, short _y, short _width, short _height);
 	void DrawSelectionError(short _x, short _y, short _width, short _height);
@@ -35,7 +35,7 @@ public:
 	bool IsInBounds(short x, short y) const;
 	bool IsRegionInBounds(short _x, short _y, short _width, short _height) const;
 	void Display() const;
-	void DrawTileAt(short _x, short _y, CTile& _tile) const;
+	void DrawTileAt(short _x, short _y, CTile& _tile, bool _isVisible = true) const;
 	void Reset();
 private:
 	short m_width, m_height;

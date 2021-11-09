@@ -3,6 +3,7 @@
 
 CPlayer::CPlayer(CGrid& _grid) : CController(_grid)
 {
+	m_grid.SetVisible(true);
 }
 
 CPlayer::~CPlayer()
@@ -10,7 +11,7 @@ CPlayer::~CPlayer()
 
 }
 
-bool CPlayer::Turn(CController& _opponent)
+short CPlayer::Turn(CController& _opponent)
 {
 	//CGrid& oGrid = _opponent.Grid();
 	SetSelectorBounds(_opponent.Grid(), m_selector.x, m_selector.y, 1, 1);
@@ -19,7 +20,7 @@ bool CPlayer::Turn(CController& _opponent)
 	{
 		type = HandleSelctionInput(0, _opponent);
 	} while (!type);
-	return _opponent.UpdateShips(type);
+	return type;
 }
 
 

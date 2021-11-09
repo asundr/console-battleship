@@ -27,7 +27,7 @@ const int Letter_Masks[] =
 	0b111111110000111111110000111111,	// E
 	0,									// F
 	0,									// G
-	0,									// H
+	0b110011110011111111110011110011,	// H
 	0b111111001100001100001100111111,	// I
 	0b111111000110110110110110011110,	// J
 	0b110011110110111100110110110011,	// K
@@ -117,3 +117,4 @@ void PrintMarqueeDefault(Bounds& bounds);
 void UpdateReel(Machine&, short[], int currentChips, int bet);
 void UpdateChips(Machine&, int currChips, int targetChips, Outcome outcome);
 Machine BuildMachine(int startingChips);
+void DrawAt(short _x, short _y, char _c, short _colour = -1);

@@ -4,10 +4,11 @@
 #include "ControllerAI.h"
 #include "Textbox.h"
 
-void InitializeGame();
+void InitializeDisplay();
 void PlayGame(CPlayer& _player, CControllerAI& _ai, CTextbox& _textbox);
 void SetupShips(CPlayer& _player, CControllerAI& _ai, CTextbox& _textbox);
 void ResetGame(CPlayer& _player, CControllerAI& _ai);
+bool PromptBool(CTextbox& _textbox, std::string message);
 
 const std::string Credit_List[] =
 {

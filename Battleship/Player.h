@@ -8,7 +8,7 @@ class CPlayer : public CController
 public:
 	CPlayer(CGrid& _grid);
 	~CPlayer();
-	bool Turn(CController& _opponent);
+	short Turn(CController& _opponent);
 	void SetSelectorBounds(CGrid& _grid, short _x, short _y, short _width, short _height);
 	void SetSelectorBounds(short _x, short _y, short _width, short _height);
 	bool SetSelector(Point& _coord, CGrid& _grid);

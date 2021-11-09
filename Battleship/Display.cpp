@@ -351,4 +351,12 @@ Machine BuildMachine(int startingChips)
 	return machine;
 }
 
-
+void DrawAt(short _x, short _y, char _c, short _colour)
+{
+	CursorPos(_x, _y);
+	if (_colour >= 0)
+	{
+		SetColour(_colour);
+	}
+	std::cout << _c;
+}
