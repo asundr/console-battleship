@@ -48,73 +48,18 @@ const int Letter_Masks[] =
 	0									// Z
 };
 
-// ID for console text and background colour
-const int Character_Colour[] = { 0x10, 0x20, 0x30, 0x80, 0x50, 0x60, 0x70, 0x40, 0x90, 0xA0 };
-
 // defines eights characters used to draw the top, bottom, left, right,
 // top-left, top-right, bottom-left, bottom-right tiles respectively
-const char Border_Tiles_Machine[] = "\u00b0\u00b0\u00b0\u00b0\u00b0\u00b0\u00b0\u00b0";
-const char Border_Tiles_Marquee[] = "\u00CD\u00BA\u00CD\u00BA\u00C9\u00BB\u00BC\u00C8";
-const char Border_Tiles_Component[] = "\u00DC\u00DB\u00DF\u00DB\u00DC\u00DC\u00DF\u00DF";
-const char Border_Tiles_Textbox[] = "\u00DF\u00DB\u00DC\u00DB\u00DB\u00DB\u00DB\u00DB";
-
-const int Celebrate_Frame_Count = 50;
-const int Chip_Update_Frame_Count = 25;
-const int Reel_Count = 3;
-
-enum class Outcome
-{
-	NONE = -1,
-	LOSS = 0,
-	MATCH = 3,
-	TRIPLE = 5,
-	JACKPOT = 10
-};
+const char Border_Tiles[] = "\u00CD\u00BA\u00CD\u00BA\u00C9\u00BB\u00BC\u00C8";
 
 struct Bounds
 {
 	short x = 0, y = 0, x_len = 1, y_len = 1;
 };
 
-struct Reel
-{
-	int digitHeight = 7;
-	int min = 2;
-	int length = 6;
-	int padding = 3;
-	int position = 0;
-	int steps = digitHeight * length;
-	Bounds bounds;
-};
-
-struct ChipDisplay
-{
-	std::string label;
-	Bounds bounds;
-};
-
-
-struct Machine
-{
-	Bounds reelWindow;
-	CTextbox terminal;
-	ChipDisplay chips;
-	ChipDisplay bet;
-	Bounds marquee;
-	Reel reel[Reel_Count];
-};
-
 void PrintLetterColumn(int mask, Point p, int col, int padding = 1);
 void PrintNumberRow(int mask, Point p, int row, int padding, char background);
 void DrawBorder(Bounds bounds, int colour, const char borderChars[]);
 void FillBorder(Bounds bounds, int colour);
-void SetChipDisplay(ChipDisplay& display, int value);
-void DrawReel(Reel& reel, Bounds& bounds);
-short GetTargetPosition(Reel& reel, short target);
-void PrintMarquee(Bounds& bounds, const std::string& word, Outcome outcome, int seed = 0);
-int GetMarqueeColour(Outcome outcome, int seed, int colSeed);
-void PrintMarqueeDefault(Bounds& bounds);
-void UpdateReel(Machine&, short[], int currentChips, int bet);
-void UpdateChips(Machine&, int currChips, int targetChips, Outcome outcome);
-Machine BuildMachine(int startingChips);
+void PrintTitle(Bounds& bounds, const std::string& word, short _colour);
 void DrawAt(short _x, short _y, char _c, short _colour = -1);

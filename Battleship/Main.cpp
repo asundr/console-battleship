@@ -19,16 +19,7 @@ int main()
 	CTextbox textbox({ 4,32 }, 121, 8);
 	ResetGame(p1, p2);
 
-	textbox.Print("\n\n\n\n\n\n\n");
-	Bounds textBounds = { 4, 31, 121, 8 };
-	PrintMarquee(textBounds, "BATTLESHIP", Outcome::NONE);
-	textbox.Print("\t\t\t\t\t\t\t\t\t\t\t\tPress any key to play.");
-
-	_getch();
-	for (int i = 0; i < 8; ++i)
-	{
-		textbox.Print('\n');
-	}
+	DisplayTitle(textbox, "BATTLESHIP", "Press any key to play.", 0x0E);
 
 	do
 	{
@@ -58,7 +49,8 @@ void PlayGame(CPlayer& _player, CControllerAI& _ai, CTextbox& _textbox)
 		{
 			if (_ai.HasLostAllShips())
 			{
-				_textbox.Print("\n\nYou win! All of your enemy's ships have been destroyed!");
+				//_textbox.Print("\n\nYou win! All of your enemy's ships have been destroyed!");
+				DisplayTitle(_textbox, "YOU WIN", "You destroyed all of your enemy's ships!", 0x0E);
 				break;
 			}
 			else
@@ -81,7 +73,8 @@ void PlayGame(CPlayer& _player, CControllerAI& _ai, CTextbox& _textbox)
 		{
 			if (_player.HasLostAllShips())
 			{
-				_textbox.Print("\n\nYou Lose! All of your ships have been destroyed!");
+				//_textbox.Print("\n\nYou Lose! All of your ships have been destroyed!");
+				DisplayTitle(_textbox, "YOU LOSE", "All of your ships have been destroyed!", 0x0E);
 				break;
 			}
 			else
@@ -120,9 +113,9 @@ void InitializeDisplay()
 	ShowCursor(false);
 
 	short borderColour = 0x6;
-	DrawBorder({ 1, 0 , 64, 32 }, borderColour, Border_Tiles_Marquee);
-	DrawBorder({ 64, 0 , 64, 32 }, borderColour, Border_Tiles_Marquee);
-	DrawBorder({ 1, 31, 127, 10 }, borderColour, Border_Tiles_Marquee); // TODO finish borders
+	DrawBorder({ 1, 0 , 64, 32 }, borderColour, Border_Tiles);
+	DrawBorder({ 64, 0 , 64, 32 }, borderColour, Border_Tiles);
+	DrawBorder({ 1, 31, 127, 10 }, borderColour, Border_Tiles); // TODO finish borders
 
 	// connecting borders
 	DrawAt(1, 31, '\u00CC', borderColour);
@@ -130,6 +123,29 @@ void InitializeDisplay()
 	DrawAt(64, 0, '\u00CB', borderColour);
 	DrawAt(64, 31, '\u00CA', borderColour);
 	
+	SetColour(0xE);
+	CursorPos(29, 0);
+	std::cout << " PLAYER ";
+	CursorPos(91, 0);
+	std::cout << " OPPONENT ";
+	ResetConsoleText();
+}
+
+void DisplayTitle(CTextbox& _textbox, std::string _title, std::string _subtitle, short _colour)
+{
+	for (int i = 0; i < 8; ++i)
+	{
+		_textbox.ScrollUp(1);
+	}
+	Bounds textBounds = { 4, 31, 121, 8 };  // TODO generalize
+	PrintTitle(textBounds, _title, 0x0E);
+	_textbox.Print("\t\t\t\t\t\t\t\t\t\t\t\t"); // TODO generalize
+	_textbox.Print(_subtitle);
+	_getch();
+	for (int i = 0; i < 8; ++i)
+	{
+		_textbox.ScrollUp(1);
+	}
 }
 
 void ResetGame(CPlayer& _player, CControllerAI& _ai)
@@ -158,8 +174,9 @@ bool PromptBool(CTextbox& _textbox, std::string message)
 
 // TODO
 // 
+// check requirement
 // credits
-// Cleanup
+// Cleanup / check resets
 // Playtesting / polish
 // Cleanup + comments
 // Label features
