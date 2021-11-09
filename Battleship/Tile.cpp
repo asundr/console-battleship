@@ -53,7 +53,7 @@ short  CTile::GetColour(bool _isVisible) const
 	}
 	else if (m_type < 0)
 	{
-		return 0xC6;//0xC0;
+		return 0xCE;//0xC0;
 	}
 	else
 	{
@@ -73,7 +73,7 @@ char CTile::GetCharacter(bool _isVisible) const
 	}
 	else if (abs(m_type) > 1 && abs(m_type) < 7)
 	{
-		return CanHit() ? '\u00E9' : '#';
+		return CanHit() ? '\u00E9' : '\u00EB';
 	}
 	else
 	{

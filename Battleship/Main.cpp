@@ -5,8 +5,6 @@
 #include "Grid.h"
 #include "Display.h"		// remove Ctextbox form display
 #include "Console.h"
-//#include "TextWindow.h" DELETE ME AND FILES
-
 
 #include "conio.h"
 
@@ -121,7 +119,7 @@ void InitializeDisplay()
 	MoveWindow(console, 0, 0, 960, 700, TRUE); // TODO resize cmd window
 	ShowCursor(false);
 
-	short borderColour = 0x2;
+	short borderColour = 0x6;
 	DrawBorder({ 1, 0 , 64, 32 }, borderColour, Border_Tiles_Marquee);
 	DrawBorder({ 64, 0 , 64, 32 }, borderColour, Border_Tiles_Marquee);
 	DrawBorder({ 1, 31, 127, 10 }, borderColour, Border_Tiles_Marquee); // TODO finish borders
