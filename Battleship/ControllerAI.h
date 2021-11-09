@@ -9,6 +9,7 @@ public:
 	CControllerAI(CGrid& _grid);
 	~CControllerAI();
 	short Turn(CController& _opponent);
+	void Reset();
 private:
 	Point m_lastHit = { -1,-1 };
 	Point* xAxis;

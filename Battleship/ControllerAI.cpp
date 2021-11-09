@@ -29,6 +29,14 @@ short CControllerAI::Turn(CController& _opponent)
 	return type;
 }
 
+void CControllerAI::Reset()
+{
+	CController::Reset();
+	short xLength = 0;
+	short yLength = 0;
+	m_lastHit = { -1, -1 };
+}
+
 short CControllerAI::HitRandom(CController& _opponent)
 {
 	short index = rand() % _opponent.Grid().GetFreeTiles();
