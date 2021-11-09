@@ -49,11 +49,11 @@ short  CTile::GetColour(bool _isVisible) const
 	}
 	else if (m_type == 8)
 	{
-		return 0x40;
+		return 0xC0;
 	}
 	else if (m_type < 0)
 	{
-		return 0xCE;//0xC0;
+		return 0x40; //0xCE;//0xC0;
 	}
 	else
 	{
@@ -65,15 +65,16 @@ char CTile::GetCharacter(bool _isVisible) const
 {
 	if (!_isVisible && m_type > 0)
 	{
-		return '\u00EF';
+		return '.';//'\u00EF';
 	}
 	if (abs(m_type) == 1)
 	{
-		return '\u00EF';
+		//return '.'; //'\u00EF';
+		return CanHit() ? '.' : '\u00B0'; //'\u00EF';
 	}
 	else if (abs(m_type) > 1 && abs(m_type) < 7)
 	{
-		return CanHit() ? '\u00E9' : '\u00EB';
+		return CanHit() ? ' ' : ' '; ///*'\u00E9'*/ : '\u00EB';
 	}
 	else
 	{
