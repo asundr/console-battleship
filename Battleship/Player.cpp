@@ -23,6 +23,12 @@ short CPlayer::Turn(CController& _opponent)
 	return type;
 }
 
+void CPlayer::Reset()
+{
+	CController::Reset();
+	m_selector = { 0, 0 };
+	m_selectorBounds = { 0, 0 };
+}
 
 void CPlayer::SetSelectorBounds(CGrid& _grid, short _x, short _y, short _width, short _height)
 {
@@ -143,13 +149,11 @@ short CPlayer::HandleSelctionInput(short _value, CController& _controller)
 			if (grid.CanHitTile(m_selector.x, m_selector.y))
 			{
 				return grid.HitTile(m_selector.x, m_selector.y);
-				//_controller.UpdateShips(type);
-				//return true;
 			}
 		}
 		else if (grid.TryToPlaceShip(m_selector.x, m_selector.y, m_selectorBounds.x, m_selectorBounds.y, _value, false))
 		{
-			return _value; //return true;
+			return _value;
 		}
 	}
 	else
@@ -170,7 +174,7 @@ short CPlayer::HandleSelctionInput(short _value, CController& _controller)
 		}
 		ShiftSelector(dx, grid);
 	}
-	return 0; // return false;
+	return 0;
 }
 
 short CPlayer::HandleSelctionInput(short _value)
