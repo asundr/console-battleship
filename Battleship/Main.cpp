@@ -149,7 +149,7 @@ void DisplayTitle(CTextbox& _textbox, std::string _title, std::string _subtitle,
 	PrintTitle(textBounds, _title, 0x0E);
 	_textbox.Print("\t\t\t\t\t\t\t\t\t\t\t\t"); // TODO generalize
 	_textbox.Print(_subtitle);
-	_getch();
+	while (_getch() != 'e');		// TODO pick key or add options
 	for (int i = 0; i < 8; ++i)
 	{
 		_textbox.ScrollUp(1);
