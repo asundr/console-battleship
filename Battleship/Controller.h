@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Grid.h"
+class CGrid;
 
 class CController
 {
 public:
 	const static short s_shipTypeCount = 5;
 	const static short s_shipSize[];
-	CController(const CGrid& _grid);
+	CController(CGrid& _grid);
 	~CController();
 	CGrid& Grid();
 	void PlaceShipsRandom();
@@ -17,7 +17,7 @@ public:
 	void Reset();
 protected:
 	short m_ships[s_shipTypeCount];
-	CGrid m_grid;
+	CGrid& m_grid;
 	inline short TypeToIndex(short _type) const
 	{
 		return _type - 2;

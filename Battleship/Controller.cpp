@@ -1,10 +1,10 @@
 #include "Controller.h"
 #include <cstdlib>
-#include "Tile.h"
+#include "Grid.h"
 
 const short CController::s_shipSize[] = { 2, 3, 3, 4, 5 };
 
-CController::CController(const CGrid& _grid) : m_grid(_grid)
+CController::CController(CGrid& _grid) : m_grid(_grid)
 {
 	Reset();
 }
