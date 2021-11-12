@@ -5,16 +5,25 @@
 class CController
 {
 public:
+	const static short s_shipTypeCount = 5;
+	const static short s_shipSize[];
 	CController(const CGrid& _grid);
 	~CController();
 	CGrid& Grid();
 	void PlaceShipsRandom();
 	bool UpdateShips(short _type);
 	bool HasLostAllShips() const;
-	short CountOfType(short _type);
+	short CountOfType(short _type) const;
 	void Reset();
 protected:
-	const short m_shipCount = 5;
-	short m_ships[5];// = { 2, 3, 3, 4, 5 };
+	short m_ships[s_shipTypeCount];
 	CGrid m_grid;
+	inline short TypeToIndex(short _type) const
+	{
+		return _type - 2;
+	}
+	inline short IndexToType(short _index) const
+	{
+		return _index + 2;
+	}
 };

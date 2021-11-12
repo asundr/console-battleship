@@ -1,6 +1,8 @@
-#include <cstdlib>
 #include "Controller.h"
+#include <cstdlib>
 #include "Tile.h"
+
+const short CController::s_shipSize[] = { 2, 3, 3, 4, 5 };
 
 CController::CController(const CGrid& _grid) : m_grid(_grid)
 {
@@ -9,7 +11,6 @@ CController::CController(const CGrid& _grid) : m_grid(_grid)
 
 CController::~CController()
 {
-
 }
 
 CGrid& CController::Grid()
@@ -19,15 +20,14 @@ CGrid& CController::Grid()
 
 void CController::PlaceShipsRandom()
 {
-	for (short i = m_shipCount - 1; i >= 0; --i)
+	short x, y;
+	for (short i = s_shipTypeCount - 1; i >= 0; --i)
 	{
-		short x = rand() % m_grid.Width();
-		short y = rand() % m_grid.Height();
-		while (!m_grid.TryToPlaceShip(x, y, m_ships[i], 1, i + 2))
+		do
 		{
 			x = rand() % m_grid.Width();
 			y = rand() % m_grid.Height();
-		}
+		} while ( !m_grid.TryToPlaceShip(x, y, m_ships[i], 1, IndexToType(i)) );
 	}
 }
 
@@ -38,13 +38,9 @@ bool CController::UpdateShips(short _type)
 	{
 		return false;
 	}
-	short& typeCount = m_ships[_type - 2];
+	short& typeCount = m_ships[TypeToIndex(_type)];
 	--typeCount;
-	if (typeCount == 0)
-	{
-		return true;
-	}
-	return false;
+	return typeCount == 0;
 }
 
 // Returns true if all ships have been lost
@@ -60,16 +56,16 @@ bool CController::HasLostAllShips() const
 	return true;
 }
 
-short CController::CountOfType(short _type)
+// Returns number of not hit sections of the passed type of ship
+short CController::CountOfType(short _type) const
 {
-	return m_ships[_type - 2];
+	return m_ships[TypeToIndex(_type)];
 }
 
 void CController::Reset()
 {
-	static short ships[] = { 2, 3, 3, 4, 5 };
-	for (short i = 0; i < m_shipCount; ++i)
+	for (short i = 0; i < s_shipTypeCount; ++i)
 	{
-		m_ships[i] = ships[i];
+		m_ships[i] = s_shipSize[i];
 	}
 }
