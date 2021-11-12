@@ -32,8 +32,9 @@ int main()
 
 void PlayGame(CPlayer& _player, CControllerAI& _ai, CTextbox& _textbox)
 {
+	bool victory = false;
 	SetupShips(_player, _ai, _textbox);
-	while (_player.Grid().GetFreeTiles() > 0)
+	while (_player.Grid().GetFreeTiles() > 0 && _ai.Grid().GetFreeTiles() > 0)
 	{
 		short type = _player.Turn(_ai);
 		_textbox.Print("\n\nYou fire... ");
@@ -49,8 +50,7 @@ void PlayGame(CPlayer& _player, CControllerAI& _ai, CTextbox& _textbox)
 		{
 			if (_ai.HasLostAllShips())
 			{
-				//_textbox.Print("\n\nYou win! All of your enemy's ships have been destroyed!");
-				DisplayTitle(_textbox, "YOU WIN", "You destroyed all of your enemy's ships!", 0x0E);
+				victory = true;
 				break;
 			}
 			else
@@ -73,8 +73,7 @@ void PlayGame(CPlayer& _player, CControllerAI& _ai, CTextbox& _textbox)
 		{
 			if (_player.HasLostAllShips())
 			{
-				//_textbox.Print("\n\nYou Lose! All of your ships have been destroyed!");
-				DisplayTitle(_textbox, "YOU LOSE", "All of your ships have been destroyed!", 0x0E);
+				victory = false;
 				break;
 			}
 			else
@@ -86,6 +85,15 @@ void PlayGame(CPlayer& _player, CControllerAI& _ai, CTextbox& _textbox)
 	_ai.Grid().SetVisible(true);
 	_player.Grid().Display();
 	_ai.Grid().Display();
+
+	if (victory)
+	{
+		DisplayTitle(_textbox, "YOU WIN", "You destroyed all of your enemy's ships!", 0x0E);
+	}
+	else
+	{
+		DisplayTitle(_textbox, "YOU LOSE", "All of your ships have been destroyed!", 0x0E);
+	}
 }
 
 void SetupShips(CPlayer& _player, CControllerAI& _ai, CTextbox& _textbox)
