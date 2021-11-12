@@ -34,7 +34,7 @@ short CPlayer::Turn(CController& _opponent)
 	return type;
 }
 
-void CPlayer::UpdateSelectorBounds(short _x, short _y, short _width, short _height, CGrid& _grid)
+void CPlayer::UpdateSelectorBounds(short _x, short _y, short _width, short _height, const CGrid& _grid)
 {
 	RevertTiles(_grid);
 	SetSelector(_x, _y);
@@ -47,7 +47,7 @@ void CPlayer::UpdateSelectorBounds(short _x, short _y, short _width, short _heig
 	UpdateSelectorBounds(_x, _y, _width, _height, m_grid);
 }
 
-bool CPlayer::UpdateSelector(const Point& _coord, CGrid& _grid)
+bool CPlayer::UpdateSelector(const Point& _coord, const CGrid& _grid)
 {
 	if (!_grid.IsRegionInBounds(_coord.x, _coord.y, m_selectorBounds->x, m_selectorBounds->y))
 	{
@@ -62,7 +62,7 @@ bool CPlayer::UpdateSelector(const Point& _coord)
 	return UpdateSelector(_coord, m_grid);
 }
 
-bool CPlayer::ShiftSelector(const Point& _shift, CGrid& _grid)
+bool CPlayer::ShiftSelector(const Point& _shift, const CGrid& _grid)
 {
 	Point pNew = { m_selector->x + _shift.x , m_selector->y + _shift.y };
 	return UpdateSelector(pNew, _grid);
@@ -73,7 +73,7 @@ bool CPlayer::ShiftSelector(const Point& _shift)
 	return ShiftSelector(_shift, m_grid);
 }
 
-bool CPlayer::ToggleSelectorRotation(CGrid& _grid)
+bool CPlayer::ToggleSelectorRotation(const CGrid& _grid)
 {
 	if (!_grid.IsRegionInBounds(m_selector->x, m_selector->y, m_selectorBounds->y, m_selectorBounds->x))
 	{
@@ -88,12 +88,12 @@ bool CPlayer::ToggleSelectorRotation()
 	return ToggleSelectorRotation(m_grid);
 }
 
-void CPlayer::RevertTiles(CGrid& _grid) const
+void CPlayer::RevertTiles(const CGrid& _grid) const
 {
 	_grid.RevertTiles(m_selector->x, m_selector->y, m_selectorBounds->x, m_selectorBounds->y);
 }
 
-void CPlayer::DrawSelection(CGrid& _grid) const
+void CPlayer::DrawSelection(const CGrid& _grid) const
 {
 	if (m_selectorBounds->x == m_selectorBounds->y) // TODO add better check for ship placement vs firing
 	{
@@ -136,7 +136,7 @@ void CPlayer::PlaceShips()
 	UpdateSelectorBounds(0, 0, 0, 0);
 }
 
-short CPlayer::HandleSelctionInput(short _value, CController& _controller)
+short CPlayer::HandleSelctionInput(short _value, const CController& _controller)
 {	
 	CGrid& grid = _controller.Grid();
 	int input = _getch();

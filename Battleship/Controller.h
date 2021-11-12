@@ -9,7 +9,7 @@ public:
 	const static short s_shipSize[];
 	CController(CGrid& _grid);
 	~CController();
-	CGrid& Grid();
+	CGrid& Grid() const;
 	void PlaceShipsRandom();
 	bool UpdateShips(short _type);
 	bool HasLostAllShips() const;

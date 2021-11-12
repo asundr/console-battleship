@@ -25,10 +25,10 @@ public:
 	bool CanHitTile(short _x, short _y) const;
 	short GetFreeTiles() const;
 	short HitNthFreeTile(short _num, Point& _hitCoords);
-	void ActionOverRegion(void (*action)(CGrid&, CTile&, short, short, bool), short _x, short _y, short _width, short _height);
-	void RevertTiles(short _x, short _y, short _width, short _height);
-	void DrawSelection(short _x, short _y, short _width, short _height);
-	void DrawSelectionError(short _x, short _y, short _width, short _height);
+	void ActionOverRegion(void (*action)(const CGrid&, CTile&, short, short, bool), short _x, short _y, short _width, short _height) const;
+	void RevertTiles(short _x, short _y, short _width, short _height) const;
+	void DrawSelection(short _x, short _y, short _width, short _height) const;
+	void DrawSelectionError(short _x, short _y, short _width, short _height) const;
 	bool IsRegionEmpty(short x, short y, short width, short length) const;
 	bool FillRegion(short _x, short _y, short _width, short _length, short type);
 	bool TryToPlaceShip(short _x, short _y, short _width, short _height, short _type, bool _randomOrientation = false);

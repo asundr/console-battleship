@@ -1,16 +1,18 @@
 #include "ControllerAI.h"
-
 #include <cstdlib>
-//#include "Tile.h"
+#include "Grid.h"
+
 
 CControllerAI::CControllerAI(CGrid& _grid) : CController(_grid)
 {
+	m_lastHit = new Point{ -1, -1 };
 	m_xAxis = new Point[12];
 	m_yAxis = new Point[12];
 }
 
 CControllerAI::~CControllerAI()
 {
+	delete m_lastHit;
 	delete[] m_xAxis;
 	delete[] m_yAxis;
 }
@@ -18,7 +20,7 @@ CControllerAI::~CControllerAI()
 short CControllerAI::Turn(CController& _opponent)
 {
 	short type;
-	if (m_lastHit.x != -1)
+	if (m_lastHit->x != -1)
 	{
 		type = TargetShip(_opponent);
 	}
@@ -34,16 +36,22 @@ void CControllerAI::Reset()
 	CController::Reset();
 	m_xLength = 0;
 	m_yLength = 0;
-	m_lastHit = { -1, -1 };
+	SetLastHit(-1, -1);
+}
+
+void CControllerAI::SetLastHit(short _x, short _y)
+{
+	m_lastHit->x = _x;
+	m_lastHit->y = _y;
 }
 
 short CControllerAI::HitRandom(CController& _opponent)
 {
 	short index = rand() % _opponent.Grid().GetFreeTiles();
-	short type =  _opponent.Grid().HitNthFreeTile(index, m_lastHit);
+	short type =  _opponent.Grid().HitNthFreeTile(index, *m_lastHit);
 	if (type == 1)
 	{
-		m_lastHit = { -1, -1 };
+		SetLastHit(-1, -1);
 	}
 	return type;
 }
@@ -53,7 +61,7 @@ short CControllerAI::TargetShip(CController& _opponent)
 	CGrid& grid = _opponent.Grid();
 	static bool xDirection = true;
 
-	if (m_lastHit.x == -1)
+	if (m_lastHit->x == -1)
 	{
 		return HitRandom(_opponent);
 	}
@@ -62,12 +70,12 @@ short CControllerAI::TargetShip(CController& _opponent)
 	{
 		if (rand() % 2 == 0)
 		{
-			m_xAxis[m_xLength++] = m_lastHit;
+			m_xAxis[m_xLength++] = *m_lastHit;
 			xDirection = true;
 		}
 		else
 		{
-			m_yAxis[m_yLength++] = m_lastHit;
+			m_yAxis[m_yLength++] = *m_lastHit;
 			xDirection = false;
 		}
 	}
@@ -76,7 +84,7 @@ short CControllerAI::TargetShip(CController& _opponent)
 	if (m_yLength == 0 || m_xLength != 0 && xDirection)		// Pick axis to search
 	{
 		Point xLast = m_xAxis[m_xLength - 1];
-		pCurr = HitAlongAxis(grid, xLast, true);
+		pCurr = FindAlongAxis(grid, xLast, true);
 		if (pCurr.x == -1)
 		{
 			m_yAxis[m_yLength++] = m_xAxis[--m_xLength]; // check other axis if ship not destroyed
@@ -90,7 +98,7 @@ short CControllerAI::TargetShip(CController& _opponent)
 	else
 	{
 		Point yLast = m_yAxis[m_yLength - 1];
-		pCurr = HitAlongAxis(grid, yLast, false);
+		pCurr = FindAlongAxis(grid, yLast, false);
 		if (pCurr.x == -1)
 		{
 			m_xAxis[m_xLength++] = m_yAxis[--m_yLength]; // check other axis if ship not destroyed
@@ -114,24 +122,24 @@ short CControllerAI::TargetShip(CController& _opponent)
 
 		if (m_xLength == 0 && m_yLength == 0)
 		{
-			m_lastHit = { -1, -1 };
+			SetLastHit(-1, -1);
 		}
 		else
 		{
 			xDirection = m_yLength == 0 || m_xLength != 0 && m_xLength < m_yLength;
-			m_lastHit = xDirection ? m_xAxis[m_xLength-1] : m_yAxis[m_yLength-1];
-
+			Point pNext = xDirection ? m_xAxis[m_xLength-1] : m_yAxis[m_yLength-1];
+			SetLastHit(pNext.x, pNext.y);
 		}
 	}
 	return type;
 }
 
 // Returns a point at the end of a continuous line of hit ships, else nullptr
-Point CControllerAI::HitAlongAxis(CGrid& _grid, Point& _lastHit, bool _xAxis)
+Point CControllerAI::FindAlongAxis(const CGrid& _grid, const Point& _lastHit, bool _isXAxis) const
 {
-	Point direction = { _xAxis ? 1 : 0, _xAxis ? 0 : 1 };
-	Point pMax = TryToFindBoatEnd(_grid, _lastHit, direction.x, direction.y);
-	Point pMin = TryToFindBoatEnd(_grid, _lastHit, -direction.x, -direction.y);
+	Point direction = { _isXAxis ? 1 : 0, _isXAxis ? 0 : 1 };
+	Point pMax = FindBoatEnd(_grid, _lastHit, direction.x, direction.y);
+	Point pMin = FindBoatEnd(_grid, _lastHit, -direction.x, -direction.y);
 	
 	if (pMax.x != -1 && pMin.x != -1)
 	{
@@ -140,7 +148,7 @@ Point CControllerAI::HitAlongAxis(CGrid& _grid, Point& _lastHit, bool _xAxis)
 	return pMax.x != -1 ? pMax : pMin;
 }
 
-Point CControllerAI::TryToFindBoatEnd(CGrid& _grid, Point& _lastHit, short _dx, short _dy)
+Point CControllerAI::FindBoatEnd(const CGrid& _grid, const Point& _lastHit, short _dx, short _dy) const
 {
 	short xCurr = _lastHit.x, yCurr = _lastHit.y;
 	do
@@ -157,11 +165,10 @@ Point CControllerAI::TryToFindBoatEnd(CGrid& _grid, Point& _lastHit, short _dx, 
 	{
 		return { -1,-1 };
 	}
-	Point out = { xCurr, yCurr };
-	return out;
+	return { xCurr, yCurr };
 }
 
-void CControllerAI::CleanAxisOfType(CGrid& _grid, Point* _axis, short& _length, short _type)
+void CControllerAI::CleanAxisOfType(const CGrid& _grid, Point* _axis, short& _length, short _type)
 {
 	short max = _length;
 	_length = 0;

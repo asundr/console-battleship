@@ -92,7 +92,7 @@ short CGrid::HitNthFreeTile(short n, Point& _hitCoords)
 	return 0;
 }
 
-void CGrid::ActionOverRegion(void (*action)(CGrid&, CTile&,short,short,bool), short _x, short _y, short _width, short _height)
+void CGrid::ActionOverRegion(void (*action)(const CGrid&, CTile&,short,short,bool), short _x, short _y, short _width, short _height) const
 {
 	for (short r = 0; r < _height; ++r)
 	{
@@ -105,21 +105,21 @@ void CGrid::ActionOverRegion(void (*action)(CGrid&, CTile&,short,short,bool), sh
 	}
 }
 
-void CGrid::RevertTiles(short _x, short _y, short _width, short _height) 
+void CGrid::RevertTiles(short _x, short _y, short _width, short _height) const
 {
-	ActionOverRegion([](CGrid& _grid, CTile& tile, short x, short y, bool visible) -> void { _grid.DrawTileAt(x, y, tile, visible); },
+	ActionOverRegion([](const CGrid& _grid, CTile& tile, short x, short y, bool visible) -> void { _grid.DrawTileAt(x, y, tile, visible); },
 		_x, _y, _width, _height);
 }
 
-void CGrid::DrawSelection(short _x, short _y, short _width, short _height)
+void CGrid::DrawSelection(short _x, short _y, short _width, short _height) const
 {
-	ActionOverRegion([](CGrid& _grid, CTile& tile, short x, short y, bool visible) -> void { _grid.DrawTileAt(x, y, CTile::s_selectorTile); },
+	ActionOverRegion([](const CGrid& _grid, CTile& tile, short x, short y, bool visible) -> void { _grid.DrawTileAt(x, y, CTile::s_selectorTile); },
 		_x, _y, _width, _height);
 }
 
-void CGrid::DrawSelectionError(short _x, short _y, short _width, short _height)
+void CGrid::DrawSelectionError(short _x, short _y, short _width, short _height) const
 {
-	ActionOverRegion([](CGrid& _grid, CTile& tile, short x, short y, bool visible) -> void { _grid.DrawTileAt(x, y, CTile::s_errorTile); },
+	ActionOverRegion([](const CGrid& _grid, CTile& tile, short x, short y, bool visible) -> void { _grid.DrawTileAt(x, y, CTile::s_errorTile); },
 		_x, _y, _width, _height);
 }
 

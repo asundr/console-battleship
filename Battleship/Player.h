@@ -12,19 +12,19 @@ public:
 	~CPlayer();
 	void Reset();
 	short Turn(CController& _opponent);
-	void UpdateSelectorBounds(short _x, short _y, short _width, short _height, CGrid& _grid);
+	void UpdateSelectorBounds(short _x, short _y, short _width, short _height, const CGrid& _grid);
 	void UpdateSelectorBounds(short _x, short _y, short _width, short _height);
-	bool UpdateSelector(const Point& _coord, CGrid& _grid);
+	bool UpdateSelector(const Point& _coord, const CGrid& _grid);
 	bool UpdateSelector(const Point& _coord);
-	bool ShiftSelector(const Point& _shift, CGrid& _grid);
+	bool ShiftSelector(const Point& _shift, const CGrid& _grid);
 	bool ShiftSelector(const Point& _shift);
-	bool ToggleSelectorRotation(CGrid& _grid);
+	bool ToggleSelectorRotation(const CGrid& _grid);
 	bool ToggleSelectorRotation();
-	void RevertTiles(CGrid& _grid) const;
-	void DrawSelection(CGrid& _grid) const;
+	void RevertTiles(const CGrid& _grid) const;
+	void DrawSelection(const CGrid& _grid) const;
 	void PlaceShips();
 	short HandleSelctionInput(short _value);
-	short HandleSelctionInput(short _value, CController& _opponent);
+	short HandleSelctionInput(short _value, const CController& _opponent);
 protected:
 	Point* m_selector;
 	Point* m_selectorBounds;

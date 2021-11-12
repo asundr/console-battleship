@@ -13,7 +13,7 @@ CController::~CController()
 {
 }
 
-CGrid& CController::Grid()
+CGrid& CController::Grid() const
 {
 	return m_grid;
 }
