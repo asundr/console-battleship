@@ -5,14 +5,14 @@
 
 CControllerAI::CControllerAI(CGrid& _grid) : CController(_grid)
 {
-	xAxis = new Point[12];
-	yAxis = new Point[12];
+	m_xAxis = new Point[12];
+	m_yAxis = new Point[12];
 }
 
 CControllerAI::~CControllerAI()
 {
-	delete[] xAxis;
-	delete[] yAxis;
+	delete[] m_xAxis;
+	delete[] m_yAxis;
 }
 
 short CControllerAI::Turn(CController& _opponent)
@@ -32,8 +32,8 @@ short CControllerAI::Turn(CController& _opponent)
 void CControllerAI::Reset()
 {
 	CController::Reset();
-	short xLength = 0;
-	short yLength = 0;
+	m_xLength = 0;
+	m_yLength = 0;
 	m_lastHit = { -1, -1 };
 }
 
@@ -58,47 +58,47 @@ short CControllerAI::TargetShip(CController& _opponent)
 		return HitRandom(_opponent);
 	}
 
-	if (xLength == 0 && yLength == 0)	// Initialize search axis
+	if (m_xLength == 0 && m_yLength == 0)	// Initialize search axis
 	{
 		if (rand() % 2 == 0)
 		{
-			xAxis[xLength++] = m_lastHit;
+			m_xAxis[m_xLength++] = m_lastHit;
 			xDirection = true;
 		}
 		else
 		{
-			yAxis[yLength++] = m_lastHit;
+			m_yAxis[m_yLength++] = m_lastHit;
 			xDirection = false;
 		}
 	}
 
 	Point pCurr = { -1, -1 };
-	if (yLength == 0 || xLength != 0 && xDirection)		// Pick axis to search
+	if (m_yLength == 0 || m_xLength != 0 && xDirection)		// Pick axis to search
 	{
-		Point xLast = xAxis[xLength - 1];
+		Point xLast = m_xAxis[m_xLength - 1];
 		pCurr = HitAlongAxis(grid, xLast, true);
 		if (pCurr.x == -1)
 		{
-			yAxis[yLength++] = xAxis[--xLength]; // check other axis if ship not destroyed
+			m_yAxis[m_yLength++] = m_xAxis[--m_xLength]; // check other axis if ship not destroyed
 			xDirection = false;
 		}
 		else if (grid.GetTile(pCurr.x, pCurr.y).Type() != 1)
 		{
-			yAxis[yLength++] = pCurr;
+			m_yAxis[m_yLength++] = pCurr;
 		}
 	}
 	else
 	{
-		Point yLast = yAxis[yLength - 1];
+		Point yLast = m_yAxis[m_yLength - 1];
 		pCurr = HitAlongAxis(grid, yLast, false);
 		if (pCurr.x == -1)
 		{
-			xAxis[xLength++] = yAxis[--yLength]; // check other axis if ship not destroyed
+			m_xAxis[m_xLength++] = m_yAxis[--m_yLength]; // check other axis if ship not destroyed
 			xDirection = true;
 		}
 		else if (grid.GetTile(pCurr.x, pCurr.y).Type() != 1)
 		{
-			xAxis[xLength++] = pCurr;
+			m_xAxis[m_xLength++] = pCurr;
 		}
 	}
 	if (pCurr.x == -1)
@@ -109,17 +109,17 @@ short CControllerAI::TargetShip(CController& _opponent)
 	short type = grid.HitTile(pCurr.x, pCurr.y);
 	if (_opponent.CountOfType(type) == 1)  // ship about to be destroyed
 	{
-		CleanAxisOfType(grid, xAxis, xLength, type);
-		CleanAxisOfType(grid, yAxis, yLength, type);
+		CleanAxisOfType(grid, m_xAxis, m_xLength, type);
+		CleanAxisOfType(grid, m_yAxis, m_yLength, type);
 
-		if (xLength == 0 && yLength == 0)
+		if (m_xLength == 0 && m_yLength == 0)
 		{
 			m_lastHit = { -1, -1 };
 		}
 		else
 		{
-			xDirection = yLength == 0 || xLength != 0 && xLength < yLength;
-			m_lastHit = xDirection ? xAxis[xLength-1] : yAxis[yLength-1];
+			xDirection = m_yLength == 0 || m_xLength != 0 && m_xLength < m_yLength;
+			m_lastHit = xDirection ? m_xAxis[m_xLength-1] : m_yAxis[m_yLength-1];
 
 		}
 	}
@@ -127,9 +127,9 @@ short CControllerAI::TargetShip(CController& _opponent)
 }
 
 // Returns a point at the end of a continuous line of hit ships, else nullptr
-Point CControllerAI::HitAlongAxis(CGrid& _grid, Point& _lastHit, bool xAxis)
+Point CControllerAI::HitAlongAxis(CGrid& _grid, Point& _lastHit, bool _xAxis)
 {
-	Point direction = { xAxis ? 1 : 0, xAxis ? 0 : 1 };
+	Point direction = { _xAxis ? 1 : 0, _xAxis ? 0 : 1 };
 	Point pMax = TryToFindBoatEnd(_grid, _lastHit, direction.x, direction.y);
 	Point pMin = TryToFindBoatEnd(_grid, _lastHit, -direction.x, -direction.y);
 	
