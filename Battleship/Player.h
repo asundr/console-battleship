@@ -31,4 +31,3 @@ protected:
 	void SetSelector(short _x, short _y);
 	void SetSelectorBounds(short _x, short _y);
 };
-

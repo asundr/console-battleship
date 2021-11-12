@@ -52,10 +52,13 @@ const int Letter_Masks[] =
 // top-left, top-right, bottom-left, bottom-right tiles respectively
 const char Border_Tiles[] = "\u00CD\u00BA\u00CD\u00BA\u00C9\u00BB\u00BC\u00C8";
 
+#ifndef __BOUNDS__
+#define __BOUNDS__
 struct Bounds
 {
-	short x = 0, y = 0, x_len = 1, y_len = 1;
+	short x = 0, y = 0, width = 1, height = 1;
 };
+#endif
 
 void PrintLetterColumn(int mask, Point p, int col, int padding = 1);
 void PrintNumberRow(int mask, Point p, int row, int padding, char background);

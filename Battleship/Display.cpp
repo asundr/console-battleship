@@ -52,29 +52,29 @@ void DrawBorder(Bounds bounds, int colour, const char tiles[])
 {
 	SetColour(colour);
 	CursorPos(bounds.x + 1, bounds.y);
-	for (int i = 1; i < bounds.x_len; ++i)
+	for (int i = 1; i < bounds.width; ++i)
 	{
 		std::cout << tiles[0];
 	}
-	CursorPos(bounds.x + 1, bounds.y + bounds.y_len - 1);
-	for (int i = 1; i < bounds.x_len; ++i)
+	CursorPos(bounds.x + 1, bounds.y + bounds.height - 1);
+	for (int i = 1; i < bounds.width; ++i)
 	{
 		std::cout << tiles[2];
 	}
-	for (int i = 1; i < bounds.y_len; ++i)
+	for (int i = 1; i < bounds.height; ++i)
 	{
 		CursorPos(bounds.x, bounds.y + i);
 		std::cout << tiles[3];
-		CursorPos(bounds.x + bounds.x_len - 1, bounds.y + i);
+		CursorPos(bounds.x + bounds.width - 1, bounds.y + i);
 		std::cout << tiles[1];
 	}
 	CursorPos(bounds.x, bounds.y);
 	std::cout << tiles[4];
-	CursorPos(bounds.x + bounds.x_len - 1, bounds.y);
+	CursorPos(bounds.x + bounds.width - 1, bounds.y);
 	std::cout << tiles[5];
-	CursorPos(bounds.x + bounds.x_len - 1, bounds.y + bounds.y_len - 1);
+	CursorPos(bounds.x + bounds.width - 1, bounds.y + bounds.height - 1);
 	std::cout << tiles[6];
-	CursorPos(bounds.x, bounds.y + bounds.y_len - 1);
+	CursorPos(bounds.x, bounds.y + bounds.height - 1);
 	std::cout << tiles[7];
 	ResetConsoleText();
 }
@@ -83,9 +83,9 @@ void DrawBorder(Bounds bounds, int colour, const char tiles[])
 void FillBorder(Bounds bounds, int colour)
 {
 	SetColour(colour);
-	for (int i = 0; i < bounds.x_len; ++i)
+	for (int i = 0; i < bounds.width; ++i)
 	{
-		for (int j = 0; j < bounds.y_len; ++j)
+		for (int j = 0; j < bounds.height; ++j)
 		{
 			CursorPos(bounds.x + i, bounds.y + j);
 			std::cout << ' ';
@@ -98,7 +98,7 @@ void FillBorder(Bounds bounds, int colour)
 void PrintTitle(Bounds& bounds, const std::string& word, short _colour)
 {
 	Point p = { bounds.x + 1, bounds.y + 1 };
-	int wordStart = ((bounds.x_len - 1) - (7 * word.length())) / 2; // centers the text
+	int wordStart = ((bounds.width - 1) - (7 * word.length())) / 2; // centers the text
 	SetColour(_colour);
 	for (int i = 0; i < wordStart; ++i)
 	{
@@ -115,7 +115,7 @@ void PrintTitle(Bounds& bounds, const std::string& word, short _colour)
 		PrintLetterColumn(0, p, 0);
 		++p.x;
 	}
-	while (p.x < bounds.x + bounds.x_len - 1)
+	while (p.x < bounds.x + bounds.width - 1)
 	{
 		PrintLetterColumn(0, p, 0);
 		++p.x;

@@ -1,13 +1,11 @@
-#include <iostream>
-
 #include "Grid.h"
+#include "Tile.h"
 #include "Console.h"
 
 CGrid::CGrid(const Point& _origin, short _width, short _height) 
 		: m_origin(Point(_origin)), m_width(_width), m_height(_height)
 {
 	m_tiles = new CTile[m_width * m_height];
-	const short max = m_width * m_height;
 	Reset();
 }
 
@@ -41,7 +39,7 @@ CTile& CGrid::GetTile(short _x, short _y) const
 	return m_tiles[Index(_x, _y)];
 }
 
-void CGrid::SetTile(short _x, short _y, const CTile& _tile)
+void CGrid::SetTile(short _x, short _y, const CTile& _tile) const
 {
 	m_tiles[Index(_x, _y)] = _tile;;
 }
@@ -59,6 +57,11 @@ short CGrid::HitTile(short _x, short _y)
 bool CGrid::CanHitTile(short _x, short _y) const
 {
 	return m_tiles[Index(_x, _y)].CanHit();
+}
+
+short CGrid::GetTileType(short _x, short _y) const
+{
+	return m_tiles[Index(_x, _y)].Type();
 }
 
 short CGrid::GetFreeTiles() const
@@ -92,7 +95,7 @@ short CGrid::HitNthFreeTile(short n, Point& _hitCoords)
 	return 0;
 }
 
-void CGrid::ActionOverRegion(void (*action)(const CGrid&, CTile&,short,short,bool), short _x, short _y, short _width, short _height) const
+void CGrid::ActionOverRegion(void (*action)(const CGrid&, const CTile&,short,short,bool), short _x, short _y, short _width, short _height) const
 {
 	for (short r = 0; r < _height; ++r)
 	{
@@ -107,19 +110,19 @@ void CGrid::ActionOverRegion(void (*action)(const CGrid&, CTile&,short,short,boo
 
 void CGrid::RevertTiles(short _x, short _y, short _width, short _height) const
 {
-	ActionOverRegion([](const CGrid& _grid, CTile& tile, short x, short y, bool visible) -> void { _grid.DrawTileAt(x, y, tile, visible); },
+	ActionOverRegion([](const CGrid& _grid, const CTile& tile, short x, short y, bool visible) -> void { _grid.DrawTileAt(x, y, tile, visible); },
 		_x, _y, _width, _height);
 }
 
 void CGrid::DrawSelection(short _x, short _y, short _width, short _height) const
 {
-	ActionOverRegion([](const CGrid& _grid, CTile& tile, short x, short y, bool visible) -> void { _grid.DrawTileAt(x, y, CTile::s_selectorTile); },
+	ActionOverRegion([](const CGrid& _grid, const CTile& tile, short x, short y, bool visible) -> void { _grid.DrawTileAt(x, y, CTile::s_selectorTile); },
 		_x, _y, _width, _height);
 }
 
 void CGrid::DrawSelectionError(short _x, short _y, short _width, short _height) const
 {
-	ActionOverRegion([](const CGrid& _grid, CTile& tile, short x, short y, bool visible) -> void { _grid.DrawTileAt(x, y, CTile::s_errorTile); },
+	ActionOverRegion([](const CGrid& _grid, const CTile& tile, short x, short y, bool visible) -> void { _grid.DrawTileAt(x, y, CTile::s_errorTile); },
 		_x, _y, _width, _height);
 }
 
@@ -142,7 +145,7 @@ bool CGrid::IsRegionEmpty(short _x, short _y, short _width, short _height) const
 	return true;
 }
 
-bool CGrid::TryToPlaceShip(short _x, short _y, short _width, short _height, short _type, bool _randomOrientation)
+bool CGrid::TryToPlaceShip(short _x, short _y, short _width, short _height, short _type, bool _randomOrientation) const
 {
 	if (!_randomOrientation)
 	{
@@ -155,7 +158,7 @@ bool CGrid::TryToPlaceShip(short _x, short _y, short _width, short _height, shor
 		|| IsRegionEmpty(_x, _y, height, width) && FillRegion(_x, _y, height, width, _type);
 }
 
-bool CGrid::FillRegion(short _x, short _y, short _width, short _height, short _type)
+bool CGrid::FillRegion(short _x, short _y, short _width, short _height, short _type) const
 {
 	if (!IsRegionInBounds(_x, _y, _width, _height))
 	{
@@ -165,15 +168,15 @@ bool CGrid::FillRegion(short _x, short _y, short _width, short _height, short _t
 	{
 		for (short j = 0; j < _height; ++j)
 		{
-			SetTile(_x + i, _y + j, _type);
+			SetTile(_x + i, _y + j, CTile(_type));
 		}
 	}
 	return true;
 }
 
-bool CGrid::IsInBounds(short x, short y) const
+bool CGrid::IsInBounds(short _x, short _y) const
 {
-	return x >= 0 && x < m_width&& y >= 0 && y < m_height;
+	return _x >= 0 && _x < m_width && _y >= 0 && _y < m_height;
 }
 
 bool CGrid::IsRegionInBounds(short _x, short _y, short _width, short _height) const
@@ -193,7 +196,7 @@ void CGrid::Display() const
 	ResetConsoleText();
 }
 
-void CGrid::DrawTileAt(short _x, short _y, CTile& _tile, bool _isVisible) const
+void CGrid::DrawTileAt(short _x, short _y, const CTile& _tile, bool _isVisible) const
 {
 	short dispX = m_origin.x + _x * CTile::s_width;
 	short dispY = m_origin.y + _y * CTile::s_height;

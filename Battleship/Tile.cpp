@@ -1,9 +1,10 @@
-#include <iostream>
-
 #include "Tile.h"
+#include <iostream>
 #include "Console.h"
 
 const CTile CTile::Null = CTile(0);
+const CTile CTile::s_selectorTile = CTile(9);
+const CTile CTile::s_errorTile = CTile(8);
 
 CTile::CTile(short _type) : m_type(_type)
 {
@@ -97,6 +98,3 @@ void CTile::Draw(short _x, short _y, bool _isVisible) const	// TODO add visibili
 		}
 	}
 }
-
-CTile CTile::s_selectorTile = CTile(9);
-CTile CTile::s_errorTile = CTile(8);

@@ -90,7 +90,7 @@ short CControllerAI::TargetShip(CController& _opponent)
 			m_yAxis[m_yLength++] = m_xAxis[--m_xLength]; // check other axis if ship not destroyed
 			xDirection = false;
 		}
-		else if (grid.GetTile(pCurr.x, pCurr.y).Type() != 1)
+		else if (grid.GetTileType(pCurr.x, pCurr.y) != 1)
 		{
 			m_yAxis[m_yLength++] = pCurr;
 		}
@@ -104,7 +104,7 @@ short CControllerAI::TargetShip(CController& _opponent)
 			m_xAxis[m_xLength++] = m_yAxis[--m_yLength]; // check other axis if ship not destroyed
 			xDirection = true;
 		}
-		else if (grid.GetTile(pCurr.x, pCurr.y).Type() != 1)
+		else if (grid.GetTileType(pCurr.x, pCurr.y) != 1)
 		{
 			m_xAxis[m_xLength++] = pCurr;
 		}
@@ -158,7 +158,7 @@ Point CControllerAI::FindBoatEnd(const CGrid& _grid, const Point& _lastHit, shor
 	} while (
 		_grid.IsInBounds(xCurr, yCurr)
 		&& !_grid.CanHitTile(xCurr, yCurr)
-		&& _grid.GetTile(xCurr, yCurr).Type() != -1
+		&& _grid.GetTileType(xCurr, yCurr) != -1
 	);
 
 	if (!_grid.IsInBounds(xCurr, yCurr) || !_grid.CanHitTile(xCurr, yCurr))
@@ -175,7 +175,7 @@ void CControllerAI::CleanAxisOfType(const CGrid& _grid, Point* _axis, short& _le
 	for (int i = 0; i < max; ++i)
 	{
 		Point& pCurr = _axis[i];
-		if (_grid.GetTile(pCurr.x, pCurr.y).Type() != -_type)
+		if (_grid.GetTileType(pCurr.x, pCurr.y) != -_type)
 		{
 			_axis[_length++] = pCurr;
 		}

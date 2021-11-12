@@ -97,7 +97,7 @@ void CPlayer::DrawSelection(const CGrid& _grid) const
 {
 	if (m_selectorBounds->x == m_selectorBounds->y) // TODO add better check for ship placement vs firing
 	{
-		if (_grid.GetTile(m_selector->x, m_selector->y).CanHit())
+		if (_grid.CanHitTile(m_selector->x, m_selector->y))
 		{
 			_grid.DrawSelection(m_selector->x, m_selector->y, m_selectorBounds->x, m_selectorBounds->y);
 		}
