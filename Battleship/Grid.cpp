@@ -44,11 +44,11 @@ void CGrid::SetTile(short _x, short _y, const CTile& _tile) const
 	m_tiles[Index(_x, _y)] = _tile;;
 }
 
-short CGrid::HitTile(short _x, short _y)
+TileType CGrid::HitTile(short _x, short _y)
 {
 	++m_hitCount;
 	CTile& tile = m_tiles[Index(_x, _y)];
-	short type = tile.Type();
+	TileType type = tile.Type();
 	tile.Hit();
 	DrawTileAt(_x, _y, tile, m_visible);
 	return type;
@@ -59,7 +59,7 @@ bool CGrid::CanHitTile(short _x, short _y) const
 	return m_tiles[Index(_x, _y)].CanHit();
 }
 
-short CGrid::GetTileType(short _x, short _y) const
+TileType CGrid::GetTileType(short _x, short _y) const
 {
 	return m_tiles[Index(_x, _y)].Type();
 }
@@ -69,7 +69,7 @@ short CGrid::GetFreeTiles() const
 	return m_width * m_height - m_hitCount;
 }
 
-short CGrid::HitNthFreeTile(short n, Point& _hitCoords)
+TileType CGrid::HitNthFreeTile(short n, Point& _hitCoords)
 {
 	for (short r = 0; r < m_height; ++r)
 	{
@@ -92,7 +92,7 @@ short CGrid::HitNthFreeTile(short n, Point& _hitCoords)
 			}
 		}
 	}
-	return 0;
+	return TileType::NONE;
 }
 
 void CGrid::ActionOverRegion(void (*action)(const CGrid&, const CTile&,short,short,bool), short _x, short _y, short _width, short _height) const
@@ -136,7 +136,7 @@ bool CGrid::IsRegionEmpty(short _x, short _y, short _width, short _height) const
 	{
 		for (short j = 0; j < _height; ++j)
 		{
-			if (m_tiles[Index(_x + i, _y + j)].Type() != 1)
+			if (m_tiles[Index(_x + i, _y + j)].Type() != TileType::EMPTY)
 			{
 				return false;
 			}
@@ -145,7 +145,7 @@ bool CGrid::IsRegionEmpty(short _x, short _y, short _width, short _height) const
 	return true;
 }
 
-bool CGrid::TryToPlaceShip(short _x, short _y, short _width, short _height, short _type, bool _randomOrientation) const
+bool CGrid::TryToPlaceShip(short _x, short _y, short _width, short _height, TileType _type, bool _randomOrientation) const
 {
 	if (!_randomOrientation)
 	{
@@ -158,7 +158,7 @@ bool CGrid::TryToPlaceShip(short _x, short _y, short _width, short _height, shor
 		|| IsRegionEmpty(_x, _y, height, width) && FillRegion(_x, _y, height, width, _type);
 }
 
-bool CGrid::FillRegion(short _x, short _y, short _width, short _height, short _type) const
+bool CGrid::FillRegion(short _x, short _y, short _width, short _height, TileType _type) const
 {
 	if (!IsRegionInBounds(_x, _y, _width, _height))
 	{

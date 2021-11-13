@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "conio.h"
 #include "ControllerAI.h"
+#include "Tile.h"
 #include "Grid.h"
 
 CPlayer::CPlayer(CGrid& _grid) : CController(_grid)
@@ -23,14 +24,14 @@ void CPlayer::Reset()
 	SetSelectorBounds(0, 0);
 }
 
-short CPlayer::Turn(CController& _opponent)
+TileType CPlayer::Turn(CController& _opponent)
 {
 	UpdateSelectorBounds(m_selector->x, m_selector->y, 1, 1, _opponent.Grid());
-	short type;
+	TileType type;
 	do
 	{
-		type = HandleSelctionInput(0, _opponent);
-	} while (!type);
+		type = HandleSelctionInput(TileType::NONE, _opponent);
+	} while (type == TileType::NONE);
 	return type;
 }
 
@@ -79,7 +80,7 @@ bool CPlayer::ToggleSelectorRotation(const CGrid& _grid)
 	{
 		return false;
 	}
-	UpdateSelectorBounds(m_selector->x, m_selector->y, m_selectorBounds->y, m_selectorBounds->x);
+	UpdateSelectorBounds(m_selector->x, m_selector->y, m_selectorBounds->y, m_selectorBounds->x, _grid);
 	return true;
 }
 
@@ -117,7 +118,6 @@ void CPlayer::DrawSelection(const CGrid& _grid) const
 	}
 }
 
-
 void CPlayer::PlaceShips()
 {
 	for (short i = s_shipTypeCount - 1; i >= 0; --i)
@@ -130,13 +130,13 @@ void CPlayer::PlaceShips()
 		{
 			UpdateSelectorBounds(m_selector->x, m_selector->y, m_ships[i], 1);
 		}
-		while (! HandleSelctionInput(IndexToType(i)) );
+		while (HandleSelctionInput(IndexToType(i)) == TileType::NONE);
 	}
 	RevertTiles(m_grid);
 	UpdateSelectorBounds(0, 0, 0, 0);
 }
 
-short CPlayer::HandleSelctionInput(short _value, const CController& _controller)
+TileType CPlayer::HandleSelctionInput(TileType _type, const CController& _controller)
 {	
 	CGrid& grid = _controller.Grid();
 	int input = _getch();
@@ -146,16 +146,16 @@ short CPlayer::HandleSelctionInput(short _value, const CController& _controller)
 	}
 	else if (input == 32) // SPACE
 	{
-		if (_value == 0)
+		if (_type == TileType::NONE)
 		{
 			if (grid.CanHitTile(m_selector->x, m_selector->y))
 			{
 				return grid.HitTile(m_selector->x, m_selector->y);
 			}
 		}
-		else if (grid.TryToPlaceShip(m_selector->x, m_selector->y, m_selectorBounds->x, m_selectorBounds->y, _value, false))
+		else if (grid.TryToPlaceShip(m_selector->x, m_selector->y, m_selectorBounds->x, m_selectorBounds->y, _type, false))
 		{
-			return _value;
+			return _type;
 		}
 	}
 	else
@@ -176,12 +176,12 @@ short CPlayer::HandleSelctionInput(short _value, const CController& _controller)
 		}
 		ShiftSelector(dx, grid);
 	}
-	return 0;
+	return TileType::NONE;
 }
 
-short CPlayer::HandleSelctionInput(short _value)
+TileType CPlayer::HandleSelctionInput(TileType _type)
 {
-	return HandleSelctionInput(_value, *this);
+	return HandleSelctionInput(_type, *this);
 }
 
 void CPlayer::SetSelector(short _x, short _y)

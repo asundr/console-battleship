@@ -1,7 +1,7 @@
 #include "ControllerAI.h"
 #include <cstdlib>
 #include "Grid.h"
-
+#include "Tile.h"
 
 CControllerAI::CControllerAI(CGrid& _grid) : CController(_grid)
 {
@@ -17,9 +17,9 @@ CControllerAI::~CControllerAI()
 	delete[] m_yAxis;
 }
 
-short CControllerAI::Turn(CController& _opponent)
+TileType CControllerAI::Turn(CController& _opponent)
 {
-	short type;
+	TileType type;
 	if (m_lastHit->x != -1)
 	{
 		type = TargetShip(_opponent);
@@ -45,18 +45,18 @@ void CControllerAI::SetLastHit(short _x, short _y)
 	m_lastHit->y = _y;
 }
 
-short CControllerAI::HitRandom(CController& _opponent)
+TileType CControllerAI::HitRandom(CController& _opponent)
 {
 	short index = rand() % _opponent.Grid().GetFreeTiles();
-	short type =  _opponent.Grid().HitNthFreeTile(index, *m_lastHit);
-	if (type == 1)
+	TileType type =  _opponent.Grid().HitNthFreeTile(index, *m_lastHit);
+	if (type == TileType::EMPTY)
 	{
 		SetLastHit(-1, -1);
 	}
 	return type;
 }
 
-short CControllerAI::TargetShip(CController& _opponent)
+TileType CControllerAI::TargetShip(CController& _opponent)
 {
 	CGrid& grid = _opponent.Grid();
 	static bool xDirection = true;
@@ -90,7 +90,7 @@ short CControllerAI::TargetShip(CController& _opponent)
 			m_yAxis[m_yLength++] = m_xAxis[--m_xLength]; // check other axis if ship not destroyed
 			xDirection = false;
 		}
-		else if (grid.GetTileType(pCurr.x, pCurr.y) != 1)
+		else if (grid.GetTileType(pCurr.x, pCurr.y) != TileType::EMPTY)
 		{
 			m_yAxis[m_yLength++] = pCurr;
 		}
@@ -104,7 +104,7 @@ short CControllerAI::TargetShip(CController& _opponent)
 			m_xAxis[m_xLength++] = m_yAxis[--m_yLength]; // check other axis if ship not destroyed
 			xDirection = true;
 		}
-		else if (grid.GetTileType(pCurr.x, pCurr.y) != 1)
+		else if (grid.GetTileType(pCurr.x, pCurr.y) != TileType::EMPTY)
 		{
 			m_xAxis[m_xLength++] = pCurr;
 		}
@@ -114,7 +114,7 @@ short CControllerAI::TargetShip(CController& _opponent)
 		return TargetShip(_opponent); // retry with other axis or Point
 	}
 	
-	short type = grid.HitTile(pCurr.x, pCurr.y);
+	TileType type = grid.HitTile(pCurr.x, pCurr.y);
 	if (_opponent.CountOfType(type) == 1)  // ship about to be destroyed
 	{
 		CleanAxisOfType(grid, m_xAxis, m_xLength, type);
@@ -158,7 +158,7 @@ Point CControllerAI::FindBoatEnd(const CGrid& _grid, const Point& _lastHit, shor
 	} while (
 		_grid.IsInBounds(xCurr, yCurr)
 		&& !_grid.CanHitTile(xCurr, yCurr)
-		&& _grid.GetTileType(xCurr, yCurr) != -1
+		&& _grid.GetTileType(xCurr, yCurr) != TileType::MISS
 	);
 
 	if (!_grid.IsInBounds(xCurr, yCurr) || !_grid.CanHitTile(xCurr, yCurr))
@@ -168,14 +168,15 @@ Point CControllerAI::FindBoatEnd(const CGrid& _grid, const Point& _lastHit, shor
 	return { xCurr, yCurr };
 }
 
-void CControllerAI::CleanAxisOfType(const CGrid& _grid, Point* _axis, short& _length, short _type)
+void CControllerAI::CleanAxisOfType(const CGrid& _grid, Point* _axis, short& _length, TileType _type)
 {
+	TileType hitType = CTile::DamageType(_type);
 	short max = _length;
 	_length = 0;
 	for (int i = 0; i < max; ++i)
 	{
 		Point& pCurr = _axis[i];
-		if (_grid.GetTileType(pCurr.x, pCurr.y) != -_type)
+		if (_grid.GetTileType(pCurr.x, pCurr.y) != hitType)
 		{
 			_axis[_length++] = pCurr;
 		}

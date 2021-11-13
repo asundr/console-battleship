@@ -1,5 +1,6 @@
 #pragma once
 
+enum class TileType;
 class CGrid;
 
 class CController
@@ -11,19 +12,19 @@ public:
 	~CController();
 	CGrid& Grid() const;
 	void PlaceShipsRandom();
-	bool UpdateShips(short _type);
+	bool UpdateShips(TileType _type);
 	bool HasLostAllShips() const;
-	short CountOfType(short _type) const;
+	short CountOfType(TileType _type) const;
 	void Reset();
 protected:
 	short m_ships[s_shipTypeCount];
 	CGrid& m_grid;
-	inline short TypeToIndex(short _type) const
+	inline short TypeToIndex(TileType _type) const
 	{
-		return _type - 2;
+		return (short)_type - 2;
 	}
-	inline short IndexToType(short _index) const
+	inline TileType IndexToType(short _index) const
 	{
-		return _index + 2;
+		return (TileType)(_index + 2);
 	}
 };

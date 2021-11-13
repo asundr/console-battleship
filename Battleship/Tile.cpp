@@ -2,57 +2,61 @@
 #include <iostream>
 #include "Console.h"
 
-const CTile CTile::Null = CTile(0);
-const CTile CTile::s_selectorTile = CTile(9);
-const CTile CTile::s_errorTile = CTile(8);
+const CTile CTile::Null = CTile(TileType::NONE);
+const CTile CTile::s_selectorTile = CTile(TileType::SELECITON_GOOD);
+const CTile CTile::s_errorTile = CTile(TileType::SELECTION_BAD);
 
-CTile::CTile(short _type) : m_type(_type)
+CTile::CTile(TileType _type) : m_type(_type)
 {
 }
 
 CTile::~CTile()
 {
-
 }
 
-short CTile::Type() const
+TileType CTile::Type() const
 {
 	return m_type;
 }
 
 void CTile::Hit()
 {
-	m_type = - m_type;
+	m_type = DamageType(m_type);
 }
 
 bool CTile::CanHit() const
 {
-	return m_type > 0;
+	return CanHit(m_type);
+}
+
+bool CTile::IsShip() const
+{
+	return IsShip(m_type);
 }
 
 short  CTile::GetColour(bool _isVisible) const
 {
-	if (!_isVisible && m_type > 0)
+	if (!_isVisible && CanHit())
 	{
 		return 0x13;//0x37; //0x87;
 	}
-	if (m_type == 1)
+	if (m_type == TileType::EMPTY)
 	{
 		return 0x13; //0x38; //0x18
 	}
-	else if (m_type == -1)
+	else if (m_type == TileType::MISS)
 	{
 		return 0x17;
 	}
-	else if (m_type == 9)
+	else if (m_type == TileType::SELECITON_GOOD)
 	{
 		return 0x20;
 	}
-	else if (m_type == 8)
+	else if (m_type == TileType::SELECTION_BAD)
 	{
 		return 0xC0;
 	}
-	else if (m_type < 0)
+	else if ((short)m_type < 0)
 	{
 		return 0x40; //0xCE;//0xC0;
 	}
@@ -64,16 +68,16 @@ short  CTile::GetColour(bool _isVisible) const
 
 char CTile::GetCharacter(bool _isVisible) const
 {
-	if (!_isVisible && m_type > 0)
+	if (!_isVisible && CanHit())
 	{
 		return '.';//'\u00EF';
 	}
-	if (abs(m_type) == 1)
+	if (m_type == TileType::EMPTY || m_type == TileType::MISS)
 	{
 		//return '.'; //'\u00EF';
 		return CanHit() ? '.' : '\u00B0'; //'\u00EF';
 	}
-	else if (abs(m_type) > 1 && abs(m_type) < 7)
+	else if (IsShip())
 	{
 		return CanHit() ? ' ' : ' '; ///*'\u00E9'*/ : '\u00EB';
 	}
@@ -97,4 +101,20 @@ void CTile::Draw(short _x, short _y, bool _isVisible) const	// TODO add visibili
 			std::cout << c;
 		}
 	}
+}
+
+TileType CTile::DamageType(TileType _type)
+{
+	return TileType(-abs((short)_type));
+}
+
+bool CTile::IsShip(TileType _type)
+{
+	short id = abs((short)_type);
+	return id > 1 && id < 7;
+}
+
+bool CTile::CanHit(TileType _type)
+{
+	return (short)_type > 0;
 }

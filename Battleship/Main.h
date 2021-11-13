@@ -4,6 +4,8 @@
 #include "ControllerAI.h"
 #include "Textbox.h"
 
+enum class TileType;
+
 void InitializeDisplay();
 void PlayGame(CPlayer& _player, CControllerAI& _ai, CTextbox& _textbox);
 void SetupShips(CPlayer& _player, CControllerAI& _ai, CTextbox& _textbox);

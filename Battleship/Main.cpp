@@ -1,11 +1,10 @@
 #include <iostream>
 #include <string>
-#include <limits>
 #include "Main.h"
+#include "Tile.h"
 #include "Grid.h"
-#include "Display.h"		// remove Ctextbox form display
 #include "Console.h"
-
+#include "Display.h"
 #include "conio.h"
 
 int main()
@@ -36,9 +35,9 @@ void PlayGame(CPlayer& _player, CControllerAI& _ai, CTextbox& _textbox)
 	SetupShips(_player, _ai, _textbox);
 	while (_player.Grid().GetFreeTiles() > 0 && _ai.Grid().GetFreeTiles() > 0)
 	{
-		short type = _player.Turn(_ai);
+		TileType type = _player.Turn(_ai);
 		_textbox.Print("\n\nYou fire... ");
-		if (type > 1)
+		if (CTile::IsShip(type) && CTile::CanHit(type))
 		{
 			_textbox.Print("and HIT!");
 		}
@@ -61,7 +60,7 @@ void PlayGame(CPlayer& _player, CControllerAI& _ai, CTextbox& _textbox)
 		
  		type = _ai.Turn(_player);
 		_textbox.Print("\nYour opponent fires... ");
-		if (type > 1)
+		if (CTile::IsShip(type) && CTile::CanHit(type))  
 		{
 			_textbox.Print("and HITS!");
 		}

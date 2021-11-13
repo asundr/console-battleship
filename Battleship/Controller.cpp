@@ -1,5 +1,6 @@
 #include "Controller.h"
 #include <cstdlib>
+#include "Tile.h"
 #include "Grid.h"
 
 const short CController::s_shipSize[] = { 2, 3, 3, 4, 5 };
@@ -32,9 +33,9 @@ void CController::PlaceShipsRandom()
 }
 
 // Updates ship lives and returns true if hit
-bool CController::UpdateShips(short _type)
+bool CController::UpdateShips(TileType _type)
 {
-	if (_type < 2 || _type > 6)
+	if (!CTile::CanHit(_type) || !CTile::IsShip(_type))
 	{
 		return false;
 	}
@@ -57,7 +58,7 @@ bool CController::HasLostAllShips() const
 }
 
 // Returns number of not hit sections of the passed type of ship
-short CController::CountOfType(short _type) const
+short CController::CountOfType(TileType _type) const
 {
 	return m_ships[TypeToIndex(_type)];
 }

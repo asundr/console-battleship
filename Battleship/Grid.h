@@ -1,5 +1,6 @@
 #pragma once
 
+enum class TileType;
 class CTile;
 
 #ifndef __Point__
@@ -21,18 +22,18 @@ public:
 	void SetVisible(bool _isVisible);
 	CTile& GetTile(short _x, short _y) const;
 	void SetTile(short _x, short _y, const CTile& _tile) const;
-	short HitTile(short _x, short _y);
+	TileType HitTile(short _x, short _y);
 	bool CanHitTile(short _x, short _y) const;
-	short GetTileType(short _x, short _y) const;
+	TileType GetTileType(short _x, short _y) const;
 	short GetFreeTiles() const;
-	short HitNthFreeTile(short _num, Point& _hitCoords);
+	TileType HitNthFreeTile(short _num, Point& _hitCoords);
 	void ActionOverRegion(void (*action)(const CGrid&, const CTile&, short, short, bool), short _x, short _y, short _width, short _height) const;
 	void RevertTiles(short _x, short _y, short _width, short _height) const;
 	void DrawSelection(short _x, short _y, short _width, short _height) const;
 	void DrawSelectionError(short _x, short _y, short _width, short _height) const;
 	bool IsRegionEmpty(short _x, short _y, short _width, short _height) const;
-	bool TryToPlaceShip(short _x, short _y, short _width, short _height, short _type, bool _randomOrientation = false) const;
-	bool FillRegion(short _x, short _y, short _width, short _height, short _type) const;
+	bool TryToPlaceShip(short _x, short _y, short _width, short _height, TileType _type, bool _randomOrientation = false) const;
+	bool FillRegion(short _x, short _y, short _width, short _height, TileType _type) const;
 	bool IsInBounds(short _x, short _y) const;
 	bool IsRegionInBounds(short _x, short _y, short _width, short _height) const;
 	void Display() const;
