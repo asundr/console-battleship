@@ -83,16 +83,15 @@ char CTile::GetCharacter(bool _isVisible) const
 	}
 }
 
-void CTile::Draw(short _x, short _y, bool _isVisible) const	// TODO add visibility param
+void CTile::Draw(short _x, short _y, bool _isVisible) const
 {
-	SetColour(GetColour(_isVisible));
+	Display::SetColour(GetColour(_isVisible));
 	char c = GetCharacter(_isVisible);
 	for (short dy = 0; dy < s_height; ++dy)
 	{
-		CursorPos(_x, _y + dy);
+		Display::CursorPos(_x, _y + dy);
 		for (short dx = 0; dx < s_width; ++dx)
 		{
-			//std::cout << ' ';
 			//std::cout <<  abs((int)m_type);
 			std::cout << c;
 		}

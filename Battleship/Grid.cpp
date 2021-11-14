@@ -197,7 +197,7 @@ void CGrid::Display() const
 			DrawTileAt(x, y, m_tiles[Index(x, y)], m_visible);
 		}
 	}
-	ResetConsoleText();
+	Display::ResetConsoleText();
 }
 
 void CGrid::DrawTileAt(short _x, short _y, const CTile& _tile, bool _isVisible) const
@@ -205,7 +205,7 @@ void CGrid::DrawTileAt(short _x, short _y, const CTile& _tile, bool _isVisible) 
 	short dispX = m_origin.x + _x * CTile::s_width;
 	short dispY = m_origin.y + _y * CTile::s_height;
 	_tile.Draw(dispX, dispY, _isVisible);
-	ResetConsoleText();
+	Display::ResetConsoleText();
 }
 
 void CGrid::Reset()

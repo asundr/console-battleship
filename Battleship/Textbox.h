@@ -10,17 +10,18 @@ public:
 	~CTextbox();
 	short Height() const;
 	short Width() const;
-	void MoveTo(short x, short y);
-	void MoveTo(Point p);
+	void MoveTo(short _x, short _y);
+	void MoveTo(Point _p);
 	void Clear();
 	void ClearLine();
-	void Print(char c);
-	void Print(char c, int colour);
-	void Print(const char str[]);
-	void Print(const std::string str);
-	void Print(const char str[], int colour);
-	void Print(const std::string str, int colour);
-	void ScrollUp(int n);
+	void Print(char _chr);
+	void Print(char _c, int _colour);
+	void Print(const char _str[]);
+	void Print(const std::string _str);
+	void Print(const char _str[], int _colour);
+	void Print(const std::string _str, int _colour);
+	void PrintLineCentre(const std::string _str, int _colour = -1);
+	void ScrollUp(int _count);
 private:
 	Bounds* m_bounds;
 	Point* m_curr;

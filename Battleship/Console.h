@@ -16,10 +16,13 @@ struct Bounds
 };
 #endif
 
-void SetWindowBounds(short _x, short _y, short _width, short _height);
-void ShowCursor(bool _visible);
-void CursorPos(short _x, short _y);
-char GetCharacterAtCursor(short _x, short _y);
-short GetColourAtCursor(short _x, short _y);
-void SetColour(int _colour);
-void ResetConsoleText();
+namespace Display
+{
+	void SetWindowBounds(short _x, short _y, short _width, short _height);
+	void ShowCursor(bool _visible);
+	void CursorPos(short _x, short _y);
+	char GetCharacterAtCursor(short _x, short _y);
+	short GetColourAtCursor(short _x, short _y);
+	void SetColour(int _colour);
+	void ResetConsoleText();
+}

@@ -21,7 +21,7 @@ int main()
 	CTextbox textbox({ 4, 32, 121, 8 });
 	ResetGame(p1, p2);
 
-	DisplayTitle(textbox, "BATTLESHIP", "Press any key to play.", 0x0E);
+	DisplayTitle(textbox, "BATTLESHIP", "\b", 0x0E);
 
 	do
 	{
@@ -29,6 +29,7 @@ int main()
 		PlayGame(p1, p2, textbox);
 	} while (PromptBool(textbox, "\nPlay again (Y/N)? "));
 	
+	ShowCredits(textbox);
 	return 0;
 }
 
@@ -117,6 +118,7 @@ void SetupShips(CPlayer& _player, CControllerAI& _ai, CTextbox& _textbox)
 
 void InitializeDisplay()
 {
+	using namespace Display;
 	srand((unsigned int)time(NULL));
 	SetWindowBounds(0, 0, 960, 700);
 	ShowCursor(false);
@@ -144,14 +146,14 @@ void DisplayTitle(CTextbox& _textbox, std::string _title, std::string _subtitle,
 	{
 		_textbox.ScrollUp(1);
 	}
-	PrintTitle(textBounds, _title, 0x0E);
-	_textbox.Print("\t\t\t\t\t\t\t\t\t\t\t\t"); // TODO generalize
-	_textbox.Print(_subtitle);
+	Display::PrintTitle(textBounds, _title, 0x0E);
+	_textbox.PrintLineCentre(_subtitle.append(" Press E to continue."));
 	while (_getch() != 'e');		// TODO pick key or add options
 	for (int i = 0; i < textBounds.height; ++i)
 	{
 		_textbox.ScrollUp(1);
 	}
+	Display::ResetConsoleText();
 }
 
 void ResetGame(CPlayer& _player, CControllerAI& _ai)
@@ -176,6 +178,22 @@ bool PromptBool(CTextbox& _textbox, std::string message)
 	}
 	_textbox.Print(input);
 	return input == 'Y' || input == 'y';
+}
+
+void ShowCredits(CTextbox& _textbox)
+{
+	Display::SetColour(0xE);
+	_textbox.Clear();
+	for (const std::string& str : Credit_List)
+	{
+		_textbox.Print('\n');
+		_textbox.PrintLineCentre(str);
+	}
+	_getch();
+	for (short i = 0; i < _textbox.Height(); ++i)
+	{
+		_textbox.ScrollUp(1);
+	}
 }
 
 // TODO
