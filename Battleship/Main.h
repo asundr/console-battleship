@@ -12,6 +12,7 @@ void DisplayTitle(CTextbox& _textbox, std::string _title, std::string _subtitle,
 void ResetGame(CPlayer& _player, CControllerAI& _ai);
 bool PromptBool(CTextbox& _textbox, std::string message);
 void ShowCredits(CTextbox& _textbox);
+void ShowInstructions(CTextbox& _textbox);
 
 const std::string Credit_List[] =
 {
@@ -22,4 +23,10 @@ const std::string Credit_List[] =
 	"https://gist.github.com/yuanqing/ffa2244bd134f911d365",
 	"",
 	"Thanks for playing!", "Press any key to Exit."
+};
+
+const short Tile_Icons_ID[] = { 1, -1, 2, -2, 8, 7 };
+const std::string Tile_Icon_Name[] =
+{
+	" Ocean", " Miss", " Ship", " Hit", " Valid", " Invalid"
 };

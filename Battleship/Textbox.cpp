@@ -15,6 +15,11 @@ CTextbox::~CTextbox()
 {
 }
 
+const Bounds& CTextbox::Bound() const
+{
+	return *m_bounds;
+}
+
 short CTextbox::Height() const
 {
 	return m_bounds->height;

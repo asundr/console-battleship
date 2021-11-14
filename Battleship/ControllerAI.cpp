@@ -5,22 +5,23 @@
 
 CControllerAI::CControllerAI(CGrid& _grid) : CController(_grid)
 {
-	m_lastHit = new Point{ -1, -1 };
+	m_target = new Point{ -1, -1 };
 	m_xAxis = new Point[12];
 	m_yAxis = new Point[12];
 }
 
 CControllerAI::~CControllerAI()
 {
-	delete m_lastHit;
+	delete m_target;
 	delete[] m_xAxis;
 	delete[] m_yAxis;
 }
 
+// AI will fire randomly unless it has hit an incompletely destroyed ship
 TileType CControllerAI::Turn(CController& _opponent)
 {
 	TileType type;
-	if (m_lastHit->x != -1)
+	if (m_target->x != -1)
 	{
 		type = TargetShip(_opponent);
 	}
@@ -31,37 +32,41 @@ TileType CControllerAI::Turn(CController& _opponent)
 	return type;
 }
 
+// Returns AI to a new game state
 void CControllerAI::Reset()
 {
 	CController::Reset();
 	m_xLength = 0;
 	m_yLength = 0;
-	SetLastHit(-1, -1);
+	SetTarget(-1, -1);
 }
 
-void CControllerAI::SetLastHit(short _x, short _y)
+void CControllerAI::SetTarget(short _x, short _y)
 {
-	m_lastHit->x = _x;
-	m_lastHit->y = _y;
+	m_target->x = _x;
+	m_target->y = _y;
 }
 
+// Uniformly picks from the remaining tiles that haven't been hit
+// Sets target to the selected tile coord if a ship is hit
 TileType CControllerAI::HitRandom(CController& _opponent)
 {
 	short index = rand() % _opponent.Grid().GetFreeTiles();
-	TileType type =  _opponent.Grid().HitNthFreeTile(index, *m_lastHit);
+	TileType type =  _opponent.Grid().HitNthFreeTile(index, *m_target);
 	if (type == TileType::EMPTY)
 	{
-		SetLastHit(-1, -1);
+		SetTarget(-1, -1);
 	}
 	return type;
 }
 
+// Makes an educated guess to destroy any ships hit in previous turns
 TileType CControllerAI::TargetShip(CController& _opponent)
 {
 	CGrid& grid = _opponent.Grid();
 	static bool xDirection = true;
 
-	if (m_lastHit->x == -1)
+	if (m_target->x == -1)
 	{
 		return HitRandom(_opponent);
 	}
@@ -70,18 +75,18 @@ TileType CControllerAI::TargetShip(CController& _opponent)
 	{
 		if (rand() % 2 == 0)
 		{
-			m_xAxis[m_xLength++] = *m_lastHit;
+			m_xAxis[m_xLength++] = *m_target;
 			xDirection = true;
 		}
 		else
 		{
-			m_yAxis[m_yLength++] = *m_lastHit;
+			m_yAxis[m_yLength++] = *m_target;
 			xDirection = false;
 		}
 	}
 
 	Point pCurr = { -1, -1 };
-	if (m_yLength == 0 || m_xLength != 0 && xDirection)		// Pick axis to search
+	if (m_yLength == 0 || m_xLength != 0 && xDirection)		// Search along xAxis
 	{
 		Point xLast = m_xAxis[m_xLength - 1];
 		pCurr = FindAlongAxis(grid, xLast, true);
@@ -90,12 +95,12 @@ TileType CControllerAI::TargetShip(CController& _opponent)
 			m_yAxis[m_yLength++] = m_xAxis[--m_xLength]; // check other axis if ship not destroyed
 			xDirection = false;
 		}
-		else if (grid.GetTileType(pCurr.x, pCurr.y) != TileType::EMPTY)
+		else if (grid.GetTileType(pCurr.x, pCurr.y) != TileType::EMPTY) 
 		{
-			m_yAxis[m_yLength++] = pCurr;
+			m_yAxis[m_yLength++] = pCurr;   // add ship tile to memory if hit
 		}
 	}
-	else
+	else  // search along yAxis
 	{
 		Point yLast = m_yAxis[m_yLength - 1];
 		pCurr = FindAlongAxis(grid, yLast, false);
@@ -106,40 +111,42 @@ TileType CControllerAI::TargetShip(CController& _opponent)
 		}
 		else if (grid.GetTileType(pCurr.x, pCurr.y) != TileType::EMPTY)
 		{
-			m_xAxis[m_xLength++] = pCurr;
+			m_xAxis[m_xLength++] = pCurr; // add ship tile to memmory if hit
 		}
 	}
-	if (pCurr.x == -1)
+	if (pCurr.x == -1) // no good choices on axis, retry with other axis or past hit
 	{
-		return TargetShip(_opponent); // retry with other axis or Point
+		return TargetShip(_opponent); 
 	}
 	
 	TileType type = grid.HitTile(pCurr.x, pCurr.y);
 	if (_opponent.CountOfType(type) == 1)  // ship about to be destroyed
 	{
+		// clean memory of all tiles from destroyed ship
 		CleanAxisOfType(grid, m_xAxis, m_xLength, type);
 		CleanAxisOfType(grid, m_yAxis, m_yLength, type);
 
+		// Target coord of any discoved but un-destroyed ships
 		if (m_xLength == 0 && m_yLength == 0)
 		{
-			SetLastHit(-1, -1);
+			SetTarget(-1, -1);
 		}
 		else
 		{
 			xDirection = m_yLength == 0 || m_xLength != 0 && m_xLength < m_yLength;
 			Point pNext = xDirection ? m_xAxis[m_xLength-1] : m_yAxis[m_yLength-1];
-			SetLastHit(pNext.x, pNext.y);
+			SetTarget(pNext.x, pNext.y);
 		}
 	}
 	return type;
 }
 
-// Returns a point at the end of a continuous line of hit ships, else nullptr
-Point CControllerAI::FindAlongAxis(const CGrid& _grid, const Point& _lastHit, bool _isXAxis) const
+// Returns either point at the end of a continuous line of hit ships, else (-1,-1)
+Point CControllerAI::FindAlongAxis(const CGrid& _grid, const Point& _target, bool _isXAxis) const
 {
 	Point direction = { _isXAxis ? 1 : 0, _isXAxis ? 0 : 1 };
-	Point pMax = FindBoatEnd(_grid, _lastHit, direction.x, direction.y);
-	Point pMin = FindBoatEnd(_grid, _lastHit, -direction.x, -direction.y);
+	Point pMax = FindBoatEnd(_grid, _target, direction.x, direction.y);
+	Point pMin = FindBoatEnd(_grid, _target, -direction.x, -direction.y);
 	
 	if (pMax.x != -1 && pMin.x != -1)
 	{
@@ -148,9 +155,10 @@ Point CControllerAI::FindAlongAxis(const CGrid& _grid, const Point& _lastHit, bo
 	return pMax.x != -1 ? pMax : pMin;
 }
 
-Point CControllerAI::FindBoatEnd(const CGrid& _grid, const Point& _lastHit, short _dx, short _dy) const
+// Returns a point at specific end of a continuous line of hit ships, else (-1,-1)
+Point CControllerAI::FindBoatEnd(const CGrid& _grid, const Point& _target, short _dx, short _dy) const
 {
-	short xCurr = _lastHit.x, yCurr = _lastHit.y;
+	short xCurr = _target.x, yCurr = _target.y;
 	do
 	{
 		xCurr += _dx;
@@ -168,6 +176,7 @@ Point CControllerAI::FindBoatEnd(const CGrid& _grid, const Point& _lastHit, shor
 	return { xCurr, yCurr };
 }
 
+// Removes all coords from array that match the damaged id of the passed TileType
 void CControllerAI::CleanAxisOfType(const CGrid& _grid, Point* _axis, short& _length, TileType _type)
 {
 	TileType hitType = CTile::DamageType(_type);

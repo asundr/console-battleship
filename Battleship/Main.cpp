@@ -22,6 +22,7 @@ int main()
 	ResetGame(p1, p2);
 
 	DisplayTitle(textbox, "BATTLESHIP", "\b", 0x0E);
+	ShowInstructions(textbox);
 
 	do
 	{
@@ -126,7 +127,7 @@ void InitializeDisplay()
 	short borderColour = 0x6;
 	DrawBorder({ 1, 0 , 64, 32 }, borderColour, Border_Tiles);
 	DrawBorder({ 64, 0 , 64, 32 }, borderColour, Border_Tiles);
-	DrawBorder({ 1, 31, 127, 10 }, borderColour, Border_Tiles); // TODO finish borders
+	DrawBorder({ 1, 31, 127, 10 }, borderColour, Border_Tiles);
 
 	// connecting borders
 	DrawAt(1, 31, '\u00CC', borderColour);
@@ -141,14 +142,15 @@ void InitializeDisplay()
 
 void DisplayTitle(CTextbox& _textbox, std::string _title, std::string _subtitle, short _colour)
 {
-	Bounds textBounds = { 4, 31, 121, 8 };  // TODO generalize
+	Bounds textBounds = Bounds(_textbox.Bound());
+	textBounds.y--;
 	for (int i = 0; i < textBounds.height; ++i)
 	{
 		_textbox.ScrollUp(1);
 	}
 	Display::PrintTitle(textBounds, _title, 0x0E);
 	_textbox.PrintLineCentre(_subtitle.append(" Press E to continue."));
-	while (_getch() != 'e');		// TODO pick key or add options
+	while (tolower(_getch()) != 'e');
 	for (int i = 0; i < textBounds.height; ++i)
 	{
 		_textbox.ScrollUp(1);
@@ -163,7 +165,6 @@ void ResetGame(CPlayer& _player, CControllerAI& _ai)
 	_ai.Reset();
 	_ai.Grid().Reset();
 	_ai.Grid().SetVisible(false);
-
 	_player.Grid().Display();
 	_ai.Grid().Display();
 }
@@ -171,13 +172,13 @@ void ResetGame(CPlayer& _player, CControllerAI& _ai)
 bool PromptBool(CTextbox& _textbox, std::string message)
 {
 	_textbox.Print(message);
-	char input = _getch();
-	while (input != 'Y' && input != 'y' && input != 'n' && input != 'N')
+	char input = tolower(_getch());
+	while (input != 'y' && input != 'n')
 	{
-		input = _getch();
+		input = tolower(_getch());
 	}
 	_textbox.Print(input);
-	return input == 'Y' || input == 'y';
+	return input == 'y';
 }
 
 void ShowCredits(CTextbox& _textbox)
@@ -189,7 +190,27 @@ void ShowCredits(CTextbox& _textbox)
 		_textbox.Print('\n');
 		_textbox.PrintLineCentre(str);
 	}
-	_getch();
+	char input = _getch();
+	for (short i = 0; i < _textbox.Height(); ++i)
+	{
+		_textbox.ScrollUp(1);
+	}
+}
+
+void ShowInstructions(CTextbox& _textbox)
+{
+	short padding = 7;
+	_textbox.PrintLineCentre("Tile Types\n\n\n\n\n\n", 0xE);
+	_textbox.PrintLineCentre("Goal: Destroy your opponent's ships before they can destroy your own.\n");
+	_textbox.PrintLineCentre("Press any key to continue.");
+	for (int i = 0; i < 6; ++i)
+	{
+		short dx = i * _textbox.Width();
+		CTile(TileType(Tile_Icons_ID[i])).Draw(padding + dx / 6, 34);
+		const std::string& name = Tile_Icon_Name[i];
+		Display::PrintStringAt(padding + 6 + dx, 36, name, 0x7);
+	}
+	char input = _getch();
 	for (short i = 0; i < _textbox.Height(); ++i)
 	{
 		_textbox.ScrollUp(1);
@@ -199,9 +220,5 @@ void ShowCredits(CTextbox& _textbox)
 // TODO
 // 
 // check requirement
-// credits
-// Cleanup / check resets
-// Playtesting / polish
-// Cleanup + comments
 // Label features
 

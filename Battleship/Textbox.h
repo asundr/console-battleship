@@ -10,6 +10,7 @@ public:
 	~CTextbox();
 	short Height() const;
 	short Width() const;
+	const Bounds& Bound() const;
 	void MoveTo(short _x, short _y);
 	void MoveTo(Point _p);
 	void Clear();

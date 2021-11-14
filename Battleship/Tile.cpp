@@ -34,15 +34,15 @@ short  CTile::GetColour(bool _isVisible) const
 {
 	if (!_isVisible && CanHit())
 	{
-		return 0x13;//0x37; //0x87;
+		return 0x17;
 	}
 	if (m_type == TileType::EMPTY)
 	{
-		return 0x13; //0x38; //0x18
+		return 0x17;
 	}
 	else if (m_type == TileType::MISS)
 	{
-		return 0x17;
+		return 0x10;
 	}
 	else if (m_type == TileType::SELECITON_GOOD)
 	{
@@ -52,13 +52,13 @@ short  CTile::GetColour(bool _isVisible) const
 	{
 		return 0xC0;
 	}
-	else if ((short)m_type < 0)
+	else if (IsShip() && !CanHit())
 	{
-		return 0x40; //0xCE;//0xC0;
+		return 0x40;
 	}
 	else
 	{
-		return 0x7F; //0x80;
+		return 0x7F;
 	}
 }
 
@@ -66,20 +66,23 @@ char CTile::GetCharacter(bool _isVisible) const
 {
 	if (!_isVisible && CanHit())
 	{
-		return '.';//'\u00EF';
+		return '.';
 	}
 	if (m_type == TileType::EMPTY || m_type == TileType::MISS)
 	{
-		//return '.'; //'\u00EF';
-		return CanHit() ? '.' : '\u00B0'; //'\u00EF';
+		return CanHit() ? '.' : ':';
 	}
 	else if (IsShip())
 	{
-		return CanHit() ? ' ' : ' '; ///*'\u00E9'*/ : '\u00EB';
+		return ' ';
+	}
+	else if (m_type == TileType::SELECITON_GOOD || m_type == TileType::SELECTION_BAD)
+	{
+		return ' ';
 	}
 	else
 	{
-		return ' ';
+		return '?';
 	}
 }
 
@@ -92,7 +95,6 @@ void CTile::Draw(short _x, short _y, bool _isVisible) const
 		Display::CursorPos(_x, _y + dy);
 		for (short dx = 0; dx < s_width; ++dx)
 		{
-			//std::cout <<  abs((int)m_type);
 			std::cout << c;
 		}
 	}

@@ -62,5 +62,5 @@ namespace Display
 	void FillBorder(const Bounds& _bounds, int _colour);
 	void PrintTitle(const Bounds& _bounds, const std::string& _word, short _colour);
 	void DrawAt(short _x, short _y, char _c, short _colour = -1);
-	void PrintStringAt(short _x, short _y, std::string _str, short _colour);
+	void PrintStringAt(short _x, short _y, std::string _str, short _colour = -1);
 }
