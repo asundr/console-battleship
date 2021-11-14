@@ -87,8 +87,8 @@ void PlayGame(CPlayer& _player, CControllerAI& _ai, CTextbox& _textbox)
 		}
 	}
 	_ai.Grid().SetVisible(true);
-	_player.Grid().Display();
-	_ai.Grid().Display();
+	_player.Grid().Draw();
+	_ai.Grid().Draw();
 
 	if (victory)
 	{
@@ -113,8 +113,8 @@ void SetupShips(CPlayer& _player, CControllerAI& _ai, CTextbox& _textbox)
 	{
 		_player.PlaceShipsRandom();
 	}
-	_player.Grid().Display();
-	_ai.Grid().Display();
+	_player.Grid().Draw();
+	_ai.Grid().Draw();
 }
 
 void InitializeDisplay()
@@ -165,8 +165,8 @@ void ResetGame(CPlayer& _player, CControllerAI& _ai)
 	_ai.Reset();
 	_ai.Grid().Reset();
 	_ai.Grid().SetVisible(false);
-	_player.Grid().Display();
-	_ai.Grid().Display();
+	_player.Grid().Draw();
+	_ai.Grid().Draw();
 }
 
 bool PromptBool(CTextbox& _textbox, std::string message)

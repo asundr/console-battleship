@@ -43,7 +43,12 @@ bool CController::UpdateShips(TileType _type)
 	}
 	short& typeCount = m_ships[TypeToIndex(_type)];
 	--typeCount;
-	return typeCount == 0;
+	bool destroyed = typeCount == 0;
+	if (destroyed)
+	{
+		m_grid.DamageFlash();
+	}
+	return destroyed;
 }
 
 // Returns true if all ships have been lost

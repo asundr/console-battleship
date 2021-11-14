@@ -198,7 +198,7 @@ bool CGrid::IsRegionInBounds(const Bounds& _bounds) const
 }
 
 // Redraws the entire grid
-void CGrid::Display() const
+void CGrid::Draw() const
 {
 	for (short y = 0; y < m_bounds->height; ++y)
 	{
@@ -208,6 +208,19 @@ void CGrid::Display() const
 		}
 	}
 	Display::ResetConsoleText();
+}
+
+void CGrid::DamageFlash() const
+{
+	for (short y = 0; y < m_bounds->height; ++y)
+	{
+		for (short x = 0; x < m_bounds->width; ++x)
+		{
+			DrawTileAt(x, y, CTile(TileType::SELECTION_BAD), true);
+		}
+	}
+	//Display::ResetConsoleText();
+	Draw();
 }
 
 // Draws the passed tile at the passed coordinate

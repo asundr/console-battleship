@@ -44,7 +44,8 @@ public:
 	bool FillRegion(const Bounds& _bounds, TileType _type) const;
 	bool IsInBounds(short _x, short _y) const;
 	bool IsRegionInBounds(const Bounds& _bounds) const;
-	void Display() const;
+	void Draw() const;
+	void DamageFlash() const;
 	void DrawTileAt(short _x, short _y, const CTile& _tile, bool _isVisible = true) const;
 	void Reset();
 private:
