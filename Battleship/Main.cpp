@@ -1,13 +1,14 @@
+#include <string>
 #include "Main.h"
 #include <ctime>
+#include "conio.h"
 #include "Tile.h"
 #include "Grid.h"
 #include "Player.h"
 #include "ControllerAI.h"
-#include "Textbox.h"
 #include "Console.h"
+#include "Textbox.h"
 #include "Display.h"
-#include "conio.h"
 
 int main()
 {
@@ -17,7 +18,7 @@ int main()
 	CGrid g2({ 66,1 });
 	CPlayer p1(g1);
 	CControllerAI p2(g2);
-	CTextbox textbox({ 4,32 }, 121, 8);
+	CTextbox textbox({ 4, 32, 121, 8 });
 	ResetGame(p1, p2);
 
 	DisplayTitle(textbox, "BATTLESHIP", "Press any key to play.", 0x0E);
@@ -117,8 +118,7 @@ void SetupShips(CPlayer& _player, CControllerAI& _ai, CTextbox& _textbox)
 void InitializeDisplay()
 {
 	srand((unsigned int)time(NULL));
-	HWND console = GetConsoleWindow();
-	MoveWindow(console, 0, 0, 960, 700, TRUE); // TODO resize cmd window
+	SetWindowBounds(0, 0, 960, 700);
 	ShowCursor(false);
 
 	short borderColour = 0x6;

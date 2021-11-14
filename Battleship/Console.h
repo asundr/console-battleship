@@ -1,10 +1,25 @@
 #pragma once
-#include <windows.h>
 
-HANDLE& GetHandle();
-int ShowCursor(bool visible);
-void CursorPos(short x, short y);
-char GetCharacterAtCursor(short x, short y);
-short GetColourAtCursor(short x, short y);
+#ifndef __Point__
+#define __Point__
+struct Point
+{
+	short x, y;
+};
+#endif
+
+#ifndef __BOUNDS__
+#define __BOUNDS__
+struct Bounds
+{
+	short x = 0, y = 0, width = 1, height = 1;
+};
+#endif
+
+void SetWindowBounds(short _x, short _y, short _width, short _height);
+void ShowCursor(bool _visible);
+void CursorPos(short _x, short _y);
+char GetCharacterAtCursor(short _x, short _y);
+short GetColourAtCursor(short _x, short _y);
+void SetColour(int _colour);
 void ResetConsoleText();
-void SetColour(int colour);

@@ -50,6 +50,9 @@ const int Letter_Masks[] =
 // top-left, top-right, bottom-left, bottom-right tiles respectively
 const char Border_Tiles[] = "\u00CD\u00BA\u00CD\u00BA\u00C9\u00BB\u00BC\u00C8";
 
+struct Bounds;
+struct Point;
+
 void PrintLetterColumn(int mask, Point p, int col, int padding = 1);
 void PrintNumberRow(int mask, Point p, int row, int padding, char background);
 void DrawBorder(Bounds bounds, int colour, const char borderChars[]);

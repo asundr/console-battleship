@@ -1,8 +1,8 @@
 #include <string>
+#include "Display.h"
 #include <iostream>
 #include "Console.h"
-#include "Textbox.h"
-#include "Display.h"
+//#include "Textbox.h"
 
 // Draws a column from a 6x5 pixel letter represented by the last 30 bits of an integer
 void PrintLetterColumn(int mask, Point p, int col, int padding)

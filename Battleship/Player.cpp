@@ -105,7 +105,6 @@ void CPlayer::RevertTiles(const CGrid& _grid) const
 
 void CPlayer::DrawSelection(const CGrid& _grid) const
 {
-	//Bounds bounds = { m_selector->x, m_selector->y, m_selector->width, m_selector->height };
 	if (m_selector->width == m_selector->height) // TODO add better check for ship placement vs firing
 	{
 		if (_grid.CanHitTile(m_selector->x, m_selector->y))

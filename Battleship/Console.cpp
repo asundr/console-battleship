@@ -1,4 +1,5 @@
 #include "Console.h"
+#include <windows.h>
 
 // Returns a reference to the console handler
 HANDLE& GetHandle()
@@ -7,47 +8,56 @@ HANDLE& GetHandle()
 	return hConsole;
 }
 
+// Sets position and dimensions of console window
+void SetWindowBounds(short _x, short _y, short _width, short _height)
+{
+	HWND console = GetConsoleWindow();
+	MoveWindow(console, _x, _y, _width, _height, TRUE);
+}
+
 // Toggles the visibility of the console cursor
-int ShowCursor(bool visible)
+void ShowCursor(bool _visible)
 {
 	CONSOLE_CURSOR_INFO cursorInfo;
 	GetConsoleCursorInfo(GetHandle(), &cursorInfo);
-	cursorInfo.bVisible = visible;
+	cursorInfo.bVisible = _visible;
 	SetConsoleCursorInfo(GetHandle(), &cursorInfo);
-	return 0;
 }
 
 // Moves the cursor to the position (x, y)
-void CursorPos(short x, short y) {
+void CursorPos(short _x, short _y) {
 	CONSOLE_SCREEN_BUFFER_INFO screenBufferInfo;
 	GetConsoleScreenBufferInfo(GetHandle(), &screenBufferInfo);
-	screenBufferInfo.dwCursorPosition = { x, y };
+	screenBufferInfo.dwCursorPosition = { _x, _y };
 	SetConsoleCursorPosition(GetHandle(), screenBufferInfo.dwCursorPosition);
 }
 
+// Returns general information about the character at (x,y)
+CHAR_INFO GetCharInfo(short _x, short _y)
+{
+	CHAR_INFO charInfo;
+	SMALL_RECT copyBounds = { _x, _y, _x, _y };
+	return ReadConsoleOutput(GetHandle(), &charInfo, { 1,1 }, { 0, 0 }, &copyBounds)
+		? charInfo
+		: CHAR_INFO();
+}
+
 // Returns the character at the position (x,y)
-char GetCharacterAtCursor(short x, short y)
+char GetCharacterAtCursor(short _x, short _y)
 {
-	CHAR_INFO charInfo;
-	SMALL_RECT copyBounds = { x, y, x, y };
-	return ReadConsoleOutput(GetHandle(), &charInfo, { 1,1 }, { 0, 0 }, &copyBounds)
-		? charInfo.Char.AsciiChar
-		: '\0';
+	return GetCharInfo(_x, _y).Char.AsciiChar;
 }
 
-short GetColourAtCursor(short x, short y)
+// Returns color information at the position (x,y)
+short GetColourAtCursor(short _x, short _y)
 {
-	CHAR_INFO charInfo;
-	SMALL_RECT copyBounds = { x, y, x, y };
-	return ReadConsoleOutput(GetHandle(), &charInfo, { 1,1 }, { 0, 0 }, &copyBounds)
-		? charInfo.Attributes
-		: 0xF;
+	return GetCharInfo(_x, _y).Attributes;
 }
 
-// Sets the text and background colour using a 2-digit hexadecimal number
-void SetColour(int colour)
+// Sets the text and background colour to print next
+void SetColour(int _colour)
 {
-	SetConsoleTextAttribute(GetHandle(), colour);
+	SetConsoleTextAttribute(GetHandle(), _colour);
 }
 
 // Returns the colour scheme back to white text on a black 
