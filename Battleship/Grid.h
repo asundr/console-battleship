@@ -11,6 +11,14 @@ struct Point
 };
 #endif
 
+#ifndef __BOUNDS__
+#define __BOUNDS__
+struct Bounds
+{
+	short x = 0, y = 0, width = 1, height = 1;
+};
+#endif
+
 class CGrid
 {
 public:
@@ -27,15 +35,15 @@ public:
 	TileType GetTileType(short _x, short _y) const;
 	short GetFreeTiles() const;
 	TileType HitNthFreeTile(short _num, Point& _hitCoords);
-	void ActionOverRegion(void (*action)(const CGrid&, const CTile&, short, short, bool), short _x, short _y, short _width, short _height) const;
-	void RevertTiles(short _x, short _y, short _width, short _height) const;
-	void DrawSelection(short _x, short _y, short _width, short _height) const;
-	void DrawSelectionError(short _x, short _y, short _width, short _height) const;
-	bool IsRegionEmpty(short _x, short _y, short _width, short _height) const;
-	bool TryToPlaceShip(short _x, short _y, short _width, short _height, TileType _type, bool _randomOrientation = false) const;
-	bool FillRegion(short _x, short _y, short _width, short _height, TileType _type) const;
+	void ActionOverRegion(void (*action)(const CGrid&, const CTile&, short, short, bool), const Bounds& _bounds) const;
+	void RevertTiles(const Bounds& _bounds) const;
+	void DrawSelection(const Bounds& _bounds) const;
+	void DrawSelectionError(const Bounds& _bounds) const;
+	bool IsRegionEmpty(const Bounds& _bounds) const;
+	bool TryToPlaceShip(const Bounds& _bounds, TileType _type, bool _randomOrientation = false) const;
+	bool FillRegion(const Bounds& _bounds, TileType _type) const;
 	bool IsInBounds(short _x, short _y) const;
-	bool IsRegionInBounds(short _x, short _y, short _width, short _height) const;
+	bool IsRegionInBounds(const Bounds& _bounds) const;
 	void Display() const;
 	void DrawTileAt(short _x, short _y, const CTile& _tile, bool _isVisible = true) const;
 	void Reset();

@@ -2,10 +2,6 @@
 #include <iostream>
 #include "Console.h"
 
-const CTile CTile::Null = CTile(TileType::NONE);
-const CTile CTile::s_selectorTile = CTile(TileType::SELECITON_GOOD);
-const CTile CTile::s_errorTile = CTile(TileType::SELECTION_BAD);
-
 CTile::CTile(TileType _type) : m_type(_type)
 {
 }

@@ -27,9 +27,6 @@ class CTile
 public:
 	static const short s_height = 3;
 	static const short s_width = 2 * s_height;
-	static const CTile Null;
-	static const CTile s_selectorTile;
-	static const CTile s_errorTile;
 	CTile(TileType _type = TileType::EMPTY);
 	~CTile();
 	TileType Type() const;

@@ -95,48 +95,48 @@ TileType CGrid::HitNthFreeTile(short n, Point& _hitCoords)
 	return TileType::NONE;
 }
 
-void CGrid::ActionOverRegion(void (*action)(const CGrid&, const CTile&,short,short,bool), short _x, short _y, short _width, short _height) const
+void CGrid::ActionOverRegion(void (*action)(const CGrid&, const CTile&,short,short,bool), const Bounds& _bounds) const
 {
-	for (short r = 0; r < _height; ++r)
+	for (short r = 0; r < _bounds.height; ++r)
 	{
-		for (short c = 0; c < _width; ++c)
+		for (short c = 0; c < _bounds.width; ++c)
 		{
-			short i = _x + c;
-			short j = _y + r;
+			short i = _bounds.x + c;
+			short j = _bounds.y + r;
 			action(*this, m_tiles[Index(i, j)], i, j, m_visible);
 		}
 	}
 }
 
-void CGrid::RevertTiles(short _x, short _y, short _width, short _height) const
+void CGrid::RevertTiles(const Bounds& _bounds) const
 {
-	ActionOverRegion([](const CGrid& _grid, const CTile& tile, short x, short y, bool visible) -> void { _grid.DrawTileAt(x, y, tile, visible); },
-		_x, _y, _width, _height);
+	ActionOverRegion([](const CGrid& _grid, const CTile& tile, short x, short y, bool visible) -> 
+		void { _grid.DrawTileAt(x, y, tile, visible); }, _bounds);
 }
 
-void CGrid::DrawSelection(short _x, short _y, short _width, short _height) const
+void CGrid::DrawSelection(const Bounds& _bounds) const
 {
-	ActionOverRegion([](const CGrid& _grid, const CTile& tile, short x, short y, bool visible) -> void { _grid.DrawTileAt(x, y, CTile::s_selectorTile); },
-		_x, _y, _width, _height);
+	ActionOverRegion([](const CGrid& _grid, const CTile& tile, short x, short y, bool visible) ->
+		void { _grid.DrawTileAt(x, y, CTile(TileType::SELECITON_GOOD)); }, _bounds);
 }
 
-void CGrid::DrawSelectionError(short _x, short _y, short _width, short _height) const
+void CGrid::DrawSelectionError(const Bounds& _bounds) const
 {
-	ActionOverRegion([](const CGrid& _grid, const CTile& tile, short x, short y, bool visible) -> void { _grid.DrawTileAt(x, y, CTile::s_errorTile); },
-		_x, _y, _width, _height);
+	ActionOverRegion([](const CGrid& _grid, const CTile& tile, short x, short y, bool visible) ->
+		void { _grid.DrawTileAt(x, y, CTile(TileType::SELECTION_BAD)); }, _bounds);
 }
 
-bool CGrid::IsRegionEmpty(short _x, short _y, short _width, short _height) const
+bool CGrid::IsRegionEmpty(const Bounds& _bounds) const
 {
-	if (!IsRegionInBounds(_x, _y, _width, _height))
+	if (!IsRegionInBounds(_bounds))
 	{
 		return false;
 	}
-	for (short i = 0; i < _width; ++i)
+	for (short i = 0; i < _bounds.width; ++i)
 	{
-		for (short j = 0; j < _height; ++j)
+		for (short j = 0; j < _bounds.height; ++j)
 		{
-			if (m_tiles[Index(_x + i, _y + j)].Type() != TileType::EMPTY)
+			if (m_tiles[Index(_bounds.x + i, _bounds.y + j)].Type() != TileType::EMPTY)
 			{
 				return false;
 			}
@@ -145,30 +145,32 @@ bool CGrid::IsRegionEmpty(short _x, short _y, short _width, short _height) const
 	return true;
 }
 
-bool CGrid::TryToPlaceShip(short _x, short _y, short _width, short _height, TileType _type, bool _randomOrientation) const
+bool CGrid::TryToPlaceShip(const Bounds& _bounds, TileType _type, bool _randomOrientation) const
 {
 	if (!_randomOrientation)
 	{
-		return IsRegionEmpty(_x, _y, _width, _height) && FillRegion(_x, _y, _width, _height, _type);
+		return IsRegionEmpty(_bounds) && FillRegion(_bounds, _type);
 	}
 	bool swap = rand() % 2 == 1;
-	short width = swap ? _height : _width;
-	short height = swap ? _width : _height;
-	return IsRegionEmpty(_x, _y, width, height) && FillRegion(_x, _y, width, height, _type)
-		|| IsRegionEmpty(_x, _y, height, width) && FillRegion(_x, _y, height, width, _type);
+	short width = swap ? _bounds.height : _bounds.width;
+	short height = swap ? _bounds.width : _bounds.height;
+	Bounds b1 = { _bounds.x, _bounds.y, width, height };
+	Bounds b2 = { _bounds.x, _bounds.y, height, width };
+	return IsRegionEmpty(b1) && FillRegion(b1, _type)
+		|| IsRegionEmpty(b2) && FillRegion(b2, _type);
 }
 
-bool CGrid::FillRegion(short _x, short _y, short _width, short _height, TileType _type) const
+bool CGrid::FillRegion(const Bounds& _bounds, TileType _type) const
 {
-	if (!IsRegionInBounds(_x, _y, _width, _height))
+	if (!IsRegionInBounds(_bounds))
 	{
 		return false;
 	}
-	for (short i = 0; i < _width; ++i)
+	for (short i = 0; i < _bounds.width; ++i)
 	{
-		for (short j = 0; j < _height; ++j)
+		for (short j = 0; j < _bounds.height; ++j)
 		{
-			SetTile(_x + i, _y + j, CTile(_type));
+			SetTile(_bounds.x + i, _bounds.y + j, CTile(_type));
 		}
 	}
 	return true;
@@ -179,9 +181,10 @@ bool CGrid::IsInBounds(short _x, short _y) const
 	return _x >= 0 && _x < m_width && _y >= 0 && _y < m_height;
 }
 
-bool CGrid::IsRegionInBounds(short _x, short _y, short _width, short _height) const
+bool CGrid::IsRegionInBounds(const Bounds& _bounds) const
 {
-	return IsInBounds(_x, _y) && IsInBounds(_x + _width - 1, _y + _height - 1);
+	return IsInBounds(_bounds.x, _bounds.y) 
+		&& IsInBounds(_bounds.x + _bounds.width - 1, _bounds.y + _bounds.height - 1);
 }
 
 void CGrid::Display() const

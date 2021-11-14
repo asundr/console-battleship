@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Textbox.h"
-
 // Each bit represents a pixel for a 6x5 number
 const int Digit_Masks[] =
 {
@@ -42,7 +40,7 @@ const int Letter_Masks[] =
 	0b111111001100001100001100001100,	// T
 	0b110011110011110011110011111111,	// U
 	0b110011110011110011110011001100,	// V
-	0b110011101101101101101101111111,	// W n
+	0b110011101101101101101101111111,	// W
 	0,									// X
 	0b110011110011111111001100001100,	// Y
 	0									// Z
@@ -52,17 +50,10 @@ const int Letter_Masks[] =
 // top-left, top-right, bottom-left, bottom-right tiles respectively
 const char Border_Tiles[] = "\u00CD\u00BA\u00CD\u00BA\u00C9\u00BB\u00BC\u00C8";
 
-#ifndef __BOUNDS__
-#define __BOUNDS__
-struct Bounds
-{
-	short x = 0, y = 0, width = 1, height = 1;
-};
-#endif
-
 void PrintLetterColumn(int mask, Point p, int col, int padding = 1);
 void PrintNumberRow(int mask, Point p, int row, int padding, char background);
 void DrawBorder(Bounds bounds, int colour, const char borderChars[]);
 void FillBorder(Bounds bounds, int colour);
 void PrintTitle(Bounds& bounds, const std::string& word, short _colour);
 void DrawAt(short _x, short _y, char _c, short _colour = -1);
+void PrintStringAt(short _x, short _y, std::string _str, short _colour);

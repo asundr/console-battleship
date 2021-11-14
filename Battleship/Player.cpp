@@ -1,20 +1,17 @@
 #include "Player.h"
 #include "conio.h"
-#include "ControllerAI.h"
 #include "Tile.h"
 #include "Grid.h"
 
 CPlayer::CPlayer(CGrid& _grid) : CController(_grid)
 {
 	m_grid.SetVisible(true);
-	m_selector = new Point{ 0, 0 };
-	m_selectorBounds = new Point{ 0, 0 };
+	m_selector = new Bounds{ 0, 0, 0, 0 };
 }
 
 CPlayer::~CPlayer()
 {
 	delete m_selector;
-	delete m_selectorBounds;
 }
 
 void CPlayer::Reset()
@@ -48,13 +45,24 @@ void CPlayer::UpdateSelectorBounds(short _x, short _y, short _width, short _heig
 	UpdateSelectorBounds(_x, _y, _width, _height, m_grid);
 }
 
+void CPlayer::UpdateSelectorBounds(const Bounds& _bounds, const CGrid& _grid)
+{
+	UpdateSelectorBounds(_bounds.x, _bounds.y, _bounds.width, _bounds.height, _grid);
+}
+
+void CPlayer::UpdateSelectorBounds(const Bounds& _bounds)
+{
+	UpdateSelectorBounds(_bounds, m_grid);
+}
+
 bool CPlayer::UpdateSelector(const Point& _coord, const CGrid& _grid)
 {
-	if (!_grid.IsRegionInBounds(_coord.x, _coord.y, m_selectorBounds->x, m_selectorBounds->y))
+	Bounds bounds = { _coord.x, _coord.y, m_selector->width, m_selector->height };
+	if (!_grid.IsRegionInBounds(bounds))
 	{
 		return false;
 	}
-	UpdateSelectorBounds(_coord.x, _coord.y, m_selectorBounds->x, m_selectorBounds->y, _grid);
+	UpdateSelectorBounds(bounds, _grid);
 	return true;
 }
 
@@ -76,11 +84,12 @@ bool CPlayer::ShiftSelector(const Point& _shift)
 
 bool CPlayer::ToggleSelectorRotation(const CGrid& _grid)
 {
-	if (!_grid.IsRegionInBounds(m_selector->x, m_selector->y, m_selectorBounds->y, m_selectorBounds->x))
+	Bounds boundsRot = { m_selector->x, m_selector->y, m_selector->height, m_selector->width };
+	if (!_grid.IsRegionInBounds(boundsRot))
 	{
 		return false;
 	}
-	UpdateSelectorBounds(m_selector->x, m_selector->y, m_selectorBounds->y, m_selectorBounds->x, _grid);
+	UpdateSelectorBounds(boundsRot, _grid);
 	return true;
 }
 
@@ -91,30 +100,30 @@ bool CPlayer::ToggleSelectorRotation()
 
 void CPlayer::RevertTiles(const CGrid& _grid) const
 {
-	_grid.RevertTiles(m_selector->x, m_selector->y, m_selectorBounds->x, m_selectorBounds->y);
+	_grid.RevertTiles(*m_selector);
 }
 
 void CPlayer::DrawSelection(const CGrid& _grid) const
 {
-	if (m_selectorBounds->x == m_selectorBounds->y) // TODO add better check for ship placement vs firing
+	//Bounds bounds = { m_selector->x, m_selector->y, m_selector->width, m_selector->height };
+	if (m_selector->width == m_selector->height) // TODO add better check for ship placement vs firing
 	{
 		if (_grid.CanHitTile(m_selector->x, m_selector->y))
 		{
-			_grid.DrawSelection(m_selector->x, m_selector->y, m_selectorBounds->x, m_selectorBounds->y);
+			_grid.DrawSelection(*m_selector);
 		}
 		else
 		{
-			_grid.DrawSelectionError(m_selector->x, m_selector->y, m_selectorBounds->x, m_selectorBounds->y);
+			_grid.DrawSelectionError(*m_selector);
 		}
 	}
-	// placing ships 
-	else if (_grid.IsRegionEmpty(m_selector->x, m_selector->y, m_selectorBounds->x, m_selectorBounds->y))
+	else if (_grid.IsRegionEmpty(*m_selector)) // placing ships 
 	{
-		_grid.DrawSelection(m_selector->x, m_selector->y, m_selectorBounds->x, m_selectorBounds->y);
+		_grid.DrawSelection(*m_selector);
 	}
 	else
 	{
-		_grid.DrawSelectionError(m_selector->x, m_selector->y, m_selectorBounds->x, m_selectorBounds->y);
+		_grid.DrawSelectionError(*m_selector);
 	}
 }
 
@@ -122,7 +131,7 @@ void CPlayer::PlaceShips()
 {
 	for (short i = s_shipTypeCount - 1; i >= 0; --i)
 	{
-		if (m_selectorBounds->x < m_selectorBounds->y)  // if selector is vertical
+		if (m_selector->width < m_selector->height)  // if selector is vertical
 		{
 			UpdateSelectorBounds(m_selector->x, m_selector->y, 1, m_ships[i]);
 		}
@@ -153,7 +162,7 @@ TileType CPlayer::HandleSelctionInput(TileType _type, const CController& _contro
 				return grid.HitTile(m_selector->x, m_selector->y);
 			}
 		}
-		else if (grid.TryToPlaceShip(m_selector->x, m_selector->y, m_selectorBounds->x, m_selectorBounds->y, _type, false))
+		else if (grid.TryToPlaceShip(*m_selector, _type, false))
 		{
 			return _type;
 		}
@@ -190,8 +199,8 @@ void CPlayer::SetSelector(short _x, short _y)
 	m_selector->y = _y;
 }
 
-void CPlayer::SetSelectorBounds(short _x, short _y)
+void CPlayer::SetSelectorBounds(short _width, short _height)
 {
-	m_selectorBounds->x = _x;
-	m_selectorBounds->y = _y;
+	m_selector->width = _width;
+	m_selector->height = _height;
 }

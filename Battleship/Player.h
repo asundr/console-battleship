@@ -4,7 +4,7 @@
 
 enum class TileType;
 struct Point;
-class CControllerAI;
+struct Bounds;
 
 class CPlayer : public CController
 {
@@ -15,6 +15,8 @@ public:
 	TileType Turn(CController& _opponent);
 	void UpdateSelectorBounds(short _x, short _y, short _width, short _height, const CGrid& _grid);
 	void UpdateSelectorBounds(short _x, short _y, short _width, short _height);
+	void UpdateSelectorBounds(const Bounds& _bounds, const CGrid& _grid);
+	void UpdateSelectorBounds(const Bounds& _bounds);
 	bool UpdateSelector(const Point& _coord, const CGrid& _grid);
 	bool UpdateSelector(const Point& _coord);
 	bool ShiftSelector(const Point& _shift, const CGrid& _grid);
@@ -27,8 +29,7 @@ public:
 	TileType HandleSelctionInput(TileType _type);
 	TileType HandleSelctionInput(TileType _type, const CController& _opponent);
 protected:
-	Point* m_selector;
-	Point* m_selectorBounds;
+	Bounds* m_selector;
 	void SetSelector(short _x, short _y);
 	void SetSelectorBounds(short _x, short _y);
 };

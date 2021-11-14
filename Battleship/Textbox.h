@@ -8,9 +8,18 @@ struct Point
 };
 #endif
 
+
+#ifndef __BOUNDS__
+#define __BOUNDS__
+struct Bounds
+{
+	short x = 0, y = 0, width = 1, height = 1;
+};
+#endif
+
 class CTextbox
 {
-	const Point m_origin;
+	const Point m_origin; // TODO convert to bounds
 	Point m_curr;
 	const short m_width, m_height;
 public:

@@ -21,14 +21,16 @@ CGrid& CController::Grid() const
 
 void CController::PlaceShipsRandom()
 {
-	short x, y;
+	//short x, y;
+	Bounds bounds = { 0, 0, 0, 1 };
 	for (short i = s_shipTypeCount - 1; i >= 0; --i)
 	{
+		bounds.width = m_ships[i];
 		do
 		{
-			x = rand() % m_grid.Width();
-			y = rand() % m_grid.Height();
-		} while ( !m_grid.TryToPlaceShip(x, y, m_ships[i], 1, IndexToType(i)) );
+			bounds.x = rand() % m_grid.Width();
+			bounds.y = rand() % m_grid.Height();
+		} while ( !m_grid.TryToPlaceShip(bounds, IndexToType(i)) );
 	}
 }
 

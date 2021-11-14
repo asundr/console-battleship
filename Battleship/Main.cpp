@@ -1,8 +1,10 @@
-#include <iostream>
-#include <string>
 #include "Main.h"
+#include <ctime>
 #include "Tile.h"
 #include "Grid.h"
+#include "Player.h"
+#include "ControllerAI.h"
+#include "Textbox.h"
 #include "Console.h"
 #include "Display.h"
 #include "conio.h"
@@ -130,26 +132,23 @@ void InitializeDisplay()
 	DrawAt(64, 0, '\u00CB', borderColour);
 	DrawAt(64, 31, '\u00CA', borderColour);
 	
-	SetColour(0xE);
-	CursorPos(29, 0);
-	std::cout << " PLAYER ";
-	CursorPos(91, 0);
-	std::cout << " OPPONENT ";
+	PrintStringAt(29, 0, " PLAYER ", 0xE);
+	PrintStringAt(91, 0, " OPPONENT ", 0xE);
 	ResetConsoleText();
 }
 
 void DisplayTitle(CTextbox& _textbox, std::string _title, std::string _subtitle, short _colour)
 {
-	for (int i = 0; i < 8; ++i)
+	Bounds textBounds = { 4, 31, 121, 8 };  // TODO generalize
+	for (int i = 0; i < textBounds.height; ++i)
 	{
 		_textbox.ScrollUp(1);
 	}
-	Bounds textBounds = { 4, 31, 121, 8 };  // TODO generalize
 	PrintTitle(textBounds, _title, 0x0E);
 	_textbox.Print("\t\t\t\t\t\t\t\t\t\t\t\t"); // TODO generalize
 	_textbox.Print(_subtitle);
 	while (_getch() != 'e');		// TODO pick key or add options
-	for (int i = 0; i < 8; ++i)
+	for (int i = 0; i < textBounds.height; ++i)
 	{
 		_textbox.ScrollUp(1);
 	}

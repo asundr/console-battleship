@@ -1,6 +1,7 @@
 #include <string>
 #include <iostream>
 #include "Console.h"
+#include "Textbox.h"
 #include "Display.h"
 
 // Draws a column from a 6x5 pixel letter represented by the last 30 bits of an integer
@@ -130,4 +131,14 @@ void DrawAt(short _x, short _y, char _c, short _colour)
 		SetColour(_colour);
 	}
 	std::cout << _c;
+}
+
+void PrintStringAt(short _x, short _y, std::string _str, short _colour)
+{
+	CursorPos(_x, _y);
+	if (_colour >= 0)
+	{
+		SetColour(_colour);
+	}
+	std::cout << _str;
 }
