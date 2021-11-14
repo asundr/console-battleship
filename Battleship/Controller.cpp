@@ -19,9 +19,9 @@ CGrid& CController::Grid() const
 	return m_grid;
 }
 
+// Places each ship with a random coordinate and orientation
 void CController::PlaceShipsRandom()
 {
-	//short x, y;
 	Bounds bounds = { 0, 0, 0, 1 };
 	for (short i = s_shipTypeCount - 1; i >= 0; --i)
 	{
@@ -65,6 +65,7 @@ short CController::CountOfType(TileType _type) const
 	return m_ships[TypeToIndex(_type)];
 }
 
+// Returns controller to a new game state
 void CController::Reset()
 {
 	for (short i = 0; i < s_shipTypeCount; ++i)
