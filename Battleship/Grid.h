@@ -22,11 +22,11 @@ struct Bounds
 class CGrid
 {
 public:
-	CGrid(const Point& _origin, short _width = 10, short _height = 10);
+	CGrid(const Bounds& _bounds);
+	CGrid(const Point& _origin);
 	~CGrid();
 	short Width() const;
 	short Height() const;
-	const Point& Origin() const;
 	void SetVisible(bool _isVisible);
 	CTile& GetTile(short _x, short _y) const;
 	void SetTile(short _x, short _y, const CTile& _tile) const;
@@ -48,14 +48,13 @@ public:
 	void DrawTileAt(short _x, short _y, const CTile& _tile, bool _isVisible = true) const;
 	void Reset();
 private:
-	Point m_origin;
-	short m_width, m_height;
+	Bounds* m_bounds;
 	bool m_visible = false;
 	CTile* m_tiles;
 	short m_hitCount = 0;
 	Point* selector = nullptr;
 	inline short Index(short _x, short _y) const 
 	{
-		return _y * m_width + _x;
+		return _y * m_bounds->width + _x;
 	}
 };

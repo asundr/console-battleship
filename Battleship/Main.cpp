@@ -14,8 +14,8 @@ int main()
 {
 	InitializeDisplay();
 
-	CGrid g1({ 3,1 }, 10, 10);
-	CGrid g2({ 66,1 });
+	CGrid g1(Point{ 3, 1 });
+	CGrid g2(Point{ 66, 1 });
 	CPlayer p1(g1);
 	CControllerAI p2(g2);
 	CTextbox textbox({ 4, 32, 121, 8 });
