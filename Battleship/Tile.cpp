@@ -1,6 +1,7 @@
 #include "Tile.h"
 #include <iostream>
 #include "Console.h"
+#include "Settings.h"
 
 CTile::CTile(TileType _type) : m_type(_type)
 {
@@ -32,17 +33,17 @@ bool CTile::IsShip() const
 
 short  CTile::GetColour(bool _isVisible) const
 {
-	if (!_isVisible && CanHit())
+	if (!CSettings::DebugMode() && !_isVisible && CanHit())
 	{
-		return 0x17;
+		return CSettings::AlternateTiles() ? 0x33 : 0x17;
 	}
 	if (m_type == TileType::EMPTY)
 	{
-		return 0x17;
+		return CSettings::AlternateTiles() ? 0x33 : 0x17;
 	}
 	else if (m_type == TileType::MISS)
 	{
-		return 0x10;
+		return CSettings::AlternateTiles() ? 0x11 : 0x10;
 	}
 	else if (m_type == TileType::SELECITON_GOOD)
 	{
@@ -64,7 +65,7 @@ short  CTile::GetColour(bool _isVisible) const
 
 char CTile::GetCharacter(bool _isVisible) const
 {
-	if (!_isVisible && CanHit())
+	if (!CSettings::DebugMode() && !_isVisible && CanHit())
 	{
 		return '.';
 	}

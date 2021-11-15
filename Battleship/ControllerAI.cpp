@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include "Grid.h"
 #include "Tile.h"
+#include "Settings.h"
 
 CControllerAI::CControllerAI(CGrid& _grid) : CController(_grid)
 {
@@ -21,7 +22,7 @@ CControllerAI::~CControllerAI()
 TileType CControllerAI::Turn(CController& _opponent)
 {
 	TileType type;
-	if (m_target->x != -1)
+	if (m_target->x != -1 && CSettings::DifficultAI())
 	{
 		type = TargetShip(_opponent);
 	}

@@ -11,6 +11,9 @@ void SetupShips(CPlayer& _player, CControllerAI& _ai, CTextbox& _textbox);
 void DisplayTitle(CTextbox& _textbox, std::string _title, std::string _subtitle, short _colour);
 void ResetGame(CPlayer& _player, CControllerAI& _ai);
 bool PromptBool(CTextbox& _textbox, std::string message);
+short PromptDigit();
+void ShowMainMenu(CTextbox& _textbox);
+void ShowOptions(CTextbox& _textbox);
 void ShowCredits(CTextbox& _textbox);
 void ShowInstructions(CTextbox& _textbox);
 

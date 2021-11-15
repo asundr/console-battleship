@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include "Tile.h"
 #include "Grid.h"
+#include "Settings.h"
 
 const short CController::s_shipSize[] = { 2, 3, 3, 4, 5 };
 
@@ -44,7 +45,7 @@ bool CController::UpdateShips(TileType _type)
 	short& typeCount = m_ships[TypeToIndex(_type)];
 	--typeCount;
 	bool destroyed = typeCount == 0;
-	if (destroyed)
+	if (destroyed && CSettings::DamageFlash())
 	{
 		m_grid.DamageFlash();
 	}

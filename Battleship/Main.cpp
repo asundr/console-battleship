@@ -9,6 +9,10 @@
 #include "Console.h"
 #include "Textbox.h"
 #include "Display.h"
+#include "Settings.h"
+
+void (*g_menu)(CTextbox&) = nullptr;
+bool g_startGame = false;
 
 int main()
 {
@@ -20,23 +24,36 @@ int main()
 	CControllerAI p2(g2);
 	CTextbox textbox({ 4, 32, 121, 8 });
 	ResetGame(p1, p2);
-
 	DisplayTitle(textbox, "BATTLESHIP", "\b", 0x0E);
 	ShowInstructions(textbox);
 
-	do
+	while (g_menu || g_startGame)
 	{
-		ResetGame(p1, p2);
-		PlayGame(p1, p2, textbox);
-	} while (PromptBool(textbox, "\nPlay again (Y/N)? "));
-	
-	ShowCredits(textbox);
+		if (g_startGame)
+		{
+			PlayGame(p1, p2, textbox);
+			if (PromptBool(textbox, "\nPlay again (Y/N)? "))
+			{
+				g_startGame = true;
+			}
+			else
+			{
+				g_menu = ShowMainMenu;
+			}
+		}
+		else
+		{
+			g_menu(textbox);
+		}
+	}
 	return 0;
 }
 
 void PlayGame(CPlayer& _player, CControllerAI& _ai, CTextbox& _textbox)
 {
 	bool victory = false;
+	g_startGame = false;
+	ResetGame(_player, _ai);
 	SetupShips(_player, _ai, _textbox);
 	while (_player.Grid().GetFreeTiles() > 0 && _ai.Grid().GetFreeTiles() > 0)
 	{
@@ -178,13 +195,89 @@ bool PromptBool(CTextbox& _textbox, std::string message)
 		input = tolower(_getch());
 	}
 	_textbox.Print(input);
+	_textbox.Print('\n');
 	return input == 'y';
+}
+
+// Returns a number from [0,9], else -1
+short PromptDigit()
+{
+	short num = _getch() - '0';
+	if (num >= 0 && num <= 9)
+	{
+		return num;
+	}
+	return -1;
+}
+
+void ShowMainMenu(CTextbox& _textbox)
+{
+	_textbox.PrintLineCentre("Battleship\n\n");
+	_textbox.Print("1) New Game\n");
+	_textbox.Print("2) Options\n");
+	_textbox.Print("3) Instructions\n");
+	_textbox.Print("4) Credits\n");
+	_textbox.Print("9) Exit\n");
+	bool repeat = true;
+	while (repeat)
+	{
+		repeat = false;
+		switch (PromptDigit())
+		{
+		case 0:
+			break;
+		case 1:
+			g_startGame = true; break;
+		case 2:
+			g_menu = ShowOptions; break;
+		case 3:
+			g_menu = ShowInstructions; break;
+		case 4:
+			g_menu = ShowCredits; break;
+		case 9:
+			g_menu = nullptr; break;
+		default:
+			repeat = true;
+		}
+	}
+}
+
+void ShowOptions(CTextbox& _textbox)
+{
+	_textbox.PrintLineCentre("Options\n\n");
+	_textbox.Print("1) Toggle Debug Mode:      ");
+	_textbox.Print((CSettings::DebugMode() ? "ENABLED\n" : "DISABLED\n"));
+	_textbox.Print("2) Toggle AI Difficulty:   ");
+	_textbox.Print((CSettings::DifficultAI() ? "HARD\n" : "EASY\n"));
+	_textbox.Print("3) Toggle Damage Flash:    ");
+	_textbox.Print((CSettings::DamageFlash() ? "ENABLED\n" : "DISABLED\n"));
+	_textbox.Print("4) Toggle Alt Ocean Tiles: ");
+	_textbox.Print((CSettings::AlternateTiles() ? "ENABLED\n" : "DISABLED\n"));
+	_textbox.Print("9) Return to Main Menu\n");
+	bool repeat = true;
+	while (repeat)
+	{
+		repeat = false;
+		switch (PromptDigit())
+		{
+		case 1:
+			CSettings::ToggleDebugMode(); break;
+		case 2:
+			CSettings::ToggleAIDifficulty(); break;
+		case 3:
+			CSettings::ToggleDamageFlash(); break;
+		case 4:
+			CSettings::ToggleAlternateTiles(); break;
+		case 9:
+			g_menu = ShowMainMenu; break;
+		default:
+			repeat = true;
+		}
+	}
 }
 
 void ShowCredits(CTextbox& _textbox)
 {
-	Display::SetColour(0xE);
-	_textbox.Clear();
 	for (const std::string& str : Credit_List)
 	{
 		_textbox.Print('\n');
@@ -195,6 +288,7 @@ void ShowCredits(CTextbox& _textbox)
 	{
 		_textbox.ScrollUp(1);
 	}
+	g_menu = ShowMainMenu;
 }
 
 void ShowInstructions(CTextbox& _textbox)
@@ -206,7 +300,7 @@ void ShowInstructions(CTextbox& _textbox)
 	for (int i = 0; i < 6; ++i)
 	{
 		short dx = i * _textbox.Width();
-		CTile(TileType(Tile_Icons_ID[i])).Draw(padding + dx / 6, 34);
+		CTile(TileType(Tile_Icons_ID[i])).Draw(padding + dx / 6, _textbox.Bound().y + 2);
 		const std::string& name = Tile_Icon_Name[i];
 		Display::PrintStringAt(padding + 6 + dx, 36, name, 0x7);
 	}
@@ -215,10 +309,13 @@ void ShowInstructions(CTextbox& _textbox)
 	{
 		_textbox.ScrollUp(1);
 	}
+	g_menu = ShowMainMenu;
 }
+
 
 // TODO
 // 
+// clean main
 // check requirement
 // Label features
 
