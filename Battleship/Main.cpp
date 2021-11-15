@@ -2,14 +2,14 @@
 #include "Main.h"
 #include <ctime>
 #include "conio.h"
-#include "Tile.h"
-#include "Grid.h"
-#include "Player.h"
-#include "ControllerAI.h"
 #include "Console.h"
 #include "Textbox.h"
 #include "Display.h"
 #include "Settings.h"
+#include "Tile.h"
+#include "Grid.h"
+#include "Player.h"
+#include "ControllerAI.h"
 
 void (*g_menu)(CTextbox&) = nullptr;
 bool g_startGame = false;
@@ -17,21 +17,20 @@ bool g_startGame = false;
 int main()
 {
 	InitializeDisplay();
-
-	CGrid g1(Point{ 3, 1 });
-	CGrid g2(Point{ 66, 1 });
-	CPlayer p1(g1);
-	CControllerAI p2(g2);
+	CGrid playerGrid(Point{ 3,1 });
+	CGrid aiGrid(Point{ 66, 1 });
+	CPlayer player(playerGrid);
+	CControllerAI ai(aiGrid);
 	CTextbox textbox({ 4, 32, 121, 8 });
-	ResetGame(p1, p2);
+
+	ResetGame(player, ai);
 	DisplayTitle(textbox, "BATTLESHIP", "\b", 0x0E);
 	ShowInstructions(textbox);
-
 	while (g_menu || g_startGame)
 	{
 		if (g_startGame)
 		{
-			PlayGame(p1, p2, textbox);
+			PlayGame(player, ai, textbox);
 			if (PromptBool(textbox, "\nPlay again (Y/N)? "))
 			{
 				g_startGame = true;
@@ -49,91 +48,7 @@ int main()
 	return 0;
 }
 
-void PlayGame(CPlayer& _player, CControllerAI& _ai, CTextbox& _textbox)
-{
-	bool victory = false;
-	g_startGame = false;
-	ResetGame(_player, _ai);
-	SetupShips(_player, _ai, _textbox);
-	while (_player.Grid().GetFreeTiles() > 0 && _ai.Grid().GetFreeTiles() > 0)
-	{
-		TileType type = _player.Turn(_ai);
-		_textbox.Print("\n\nYou fire... ");
-		if (CTile::IsShip(type) && CTile::CanHit(type))
-		{
-			_textbox.Print("and HIT!");
-		}
-		else
-		{
-			_textbox.Print("and miss!");
-		}
-		if (_ai.UpdateShips(type))
-		{
-			if (_ai.HasLostAllShips())
-			{
-				victory = true;
-				break;
-			}
-			else
-			{
-				_textbox.Print("\nYou destroyed one of your opponent's ships!");
-			}
-		}
-		
- 		type = _ai.Turn(_player);
-		_textbox.Print("\nYour opponent fires... ");
-		if (CTile::IsShip(type) && CTile::CanHit(type))  
-		{
-			_textbox.Print("and HITS!");
-		}
-		else
-		{
-			_textbox.Print("and misses!");
-		}
-		if (_player.UpdateShips(type))
-		{
-			if (_player.HasLostAllShips())
-			{
-				victory = false;
-				break;
-			}
-			else
-			{
-				_textbox.Print("\nOne of your ships has been destroyed!");
-			}
-		}
-	}
-	_ai.Grid().SetVisible(true);
-	_player.Grid().Draw();
-	_ai.Grid().Draw();
-
-	if (victory)
-	{
-		DisplayTitle(_textbox, "YOU WIN", "You destroyed all of your enemy's ships!", 0x0E);
-	}
-	else
-	{
-		DisplayTitle(_textbox, "YOU LOSE", "All of your ships have been destroyed!", 0x0E);
-	}
-}
-
-void SetupShips(CPlayer& _player, CControllerAI& _ai, CTextbox& _textbox)
-{
-	_ai.PlaceShipsRandom();
-	bool manualPlacement = PromptBool(_textbox, "\n\nWould you like to place your ships manually (Y/N)? ");
-	_textbox.Print("\nUse WASD to move, E to rotate and SPACE to confirm location.");
-	if (manualPlacement)
-	{
-		_player.PlaceShips();
-	}
-	else
-	{
-		_player.PlaceShipsRandom();
-	}
-	_player.Grid().Draw();
-	_ai.Grid().Draw();
-}
-
+// Sets up the console window and draws borders to the game screen
 void InitializeDisplay()
 {
 	using namespace Display;
@@ -157,6 +72,96 @@ void InitializeDisplay()
 	ResetConsoleText();
 }
 
+// Main game loop
+void PlayGame(CPlayer& _player, CControllerAI& _ai, CTextbox& _textbox)
+{
+	bool victory = false;
+	g_startGame = false;
+	ResetGame(_player, _ai);
+	SetupShips(_player, _ai, _textbox);
+	while (_player.Grid().GetFreeTiles() > 0 && _ai.Grid().GetFreeTiles() > 0)
+	{
+		// Player Turn
+		TileType type = _player.Turn(_ai);
+		_textbox.Print("\n\nYou fire... ");
+		if (CTile::IsShip(type) && CTile::CanHit(type))
+		{
+			_textbox.Print("and HIT!");
+		}
+		else
+		{
+			_textbox.Print("and miss!");
+		}
+		if (_ai.UpdateShips(type)) // Evaluate damage if hit
+		{
+			if (_ai.HasLostAllShips())
+			{
+				victory = true;
+				break;
+			}
+			else
+			{
+				_textbox.Print("\nYou destroyed one of your opponent's ships!");
+			}
+		}
+		
+		// AI Turn
+ 		type = _ai.Turn(_player);
+		_textbox.Print("\nYour opponent fires... ");
+		if (CTile::IsShip(type) && CTile::CanHit(type))  
+		{
+			_textbox.Print("and HITS!");
+		}
+		else
+		{
+			_textbox.Print("and misses!");
+		}
+		if (_player.UpdateShips(type)) // Evaluate damage if hit
+		{
+			if (_player.HasLostAllShips())
+			{
+				victory = false;
+				break;
+			}
+			else
+			{
+				_textbox.Print("\nOne of your ships has been destroyed!");
+			}
+		}
+	}
+	_ai.Grid().SetVisible(true); // reveal enemy grid at end of game
+	_player.Grid().Draw();
+	_ai.Grid().Draw();
+
+	if (victory)
+	{
+		DisplayTitle(_textbox, "YOU WIN", "You destroyed all of your enemy's ships!", 0x0E);
+	}
+	else
+	{
+		DisplayTitle(_textbox, "YOU LOSE", "All of your ships have been destroyed!", 0x0E);
+	}
+}
+
+// Places AI ships and prompts player to place their ships
+void SetupShips(CPlayer& _player, CControllerAI& _ai, CTextbox& _textbox)
+{
+	_ai.PlaceShipsRandom();
+	bool manualPlacement = PromptBool(_textbox, "\nWould you like to place your ships manually (Y/N)? ");
+	_textbox.Print("\nUse WASD to move, E to rotate and SPACE to confirm location.");
+	if (manualPlacement)
+	{
+		_player.PlaceShips();
+	}
+	else
+	{
+		_player.PlaceShipsRandom();
+	}
+	_player.Grid().Draw();
+	_ai.Grid().Draw();
+}
+
+// Prints a title and subtitle into a textbox using large character
 void DisplayTitle(CTextbox& _textbox, std::string _title, std::string _subtitle, short _colour)
 {
 	Bounds textBounds = Bounds(_textbox.Bound());
@@ -175,6 +180,7 @@ void DisplayTitle(CTextbox& _textbox, std::string _title, std::string _subtitle,
 	Display::ResetConsoleText();
 }
 
+// Reverts the player and grid to a new game state
 void ResetGame(CPlayer& _player, CControllerAI& _ai)
 {
 	_player.Reset();
@@ -186,6 +192,7 @@ void ResetGame(CPlayer& _player, CControllerAI& _ai)
 	_ai.Grid().Draw();
 }
 
+// Returns true when the player enters 'y', false if they enter 'n'
 bool PromptBool(CTextbox& _textbox, std::string message)
 {
 	_textbox.Print(message);
@@ -210,6 +217,7 @@ short PromptDigit()
 	return -1;
 }
 
+// Displays the main menu and handles selection of menu options
 void ShowMainMenu(CTextbox& _textbox)
 {
 	_textbox.PrintLineCentre("Battleship\n\n");
@@ -242,6 +250,7 @@ void ShowMainMenu(CTextbox& _textbox)
 	}
 }
 
+// Displays the options menu and handles selction of menu options
 void ShowOptions(CTextbox& _textbox)
 {
 	_textbox.PrintLineCentre("Options\n\n");
@@ -276,6 +285,7 @@ void ShowOptions(CTextbox& _textbox)
 	}
 }
 
+// Dispilays the credits and returns to the main menu
 void ShowCredits(CTextbox& _textbox)
 {
 	for (const std::string& str : Credit_List)
@@ -291,6 +301,7 @@ void ShowCredits(CTextbox& _textbox)
 	g_menu = ShowMainMenu;
 }
 
+// Displays labelled tiles and basic game instructions
 void ShowInstructions(CTextbox& _textbox)
 {
 	short padding = 7;
@@ -311,11 +322,3 @@ void ShowInstructions(CTextbox& _textbox)
 	}
 	g_menu = ShowMainMenu;
 }
-
-
-// TODO
-// 
-// clean main
-// check requirement
-// Label features
-
