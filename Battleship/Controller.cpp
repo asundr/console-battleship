@@ -31,7 +31,7 @@ void CController::PlaceShipsRandom()
 		{
 			bounds.x = rand() % m_grid.Width();
 			bounds.y = rand() % m_grid.Height();
-		} while ( !m_grid.TryToPlaceShip(bounds, IndexToType(i)) );
+		} while ( !m_grid.TryToPlaceShip(bounds, IndexToType(i), true) );
 	}
 }
 
