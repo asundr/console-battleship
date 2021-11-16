@@ -13,9 +13,9 @@ CControllerAI::CControllerAI(CGrid& _grid) : CController(_grid)
 
 CControllerAI::~CControllerAI()
 {
-	delete m_target;
-	delete[] m_xAxis;
 	delete[] m_yAxis;
+	delete[] m_xAxis;
+	delete m_target;
 }
 
 // AI will fire randomly unless it has hit an incompletely destroyed ship

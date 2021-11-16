@@ -17,6 +17,7 @@ CGrid::CGrid(const Point& _origin) : CGrid(Bounds{_origin.x, _origin.y, 10,10})
 CGrid::~CGrid()
 {
 	delete[] m_tiles;
+	delete m_bounds;
 }
 
 short CGrid::Width() const

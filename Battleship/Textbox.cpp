@@ -13,6 +13,8 @@ CTextbox::CTextbox(Bounds _bounds)
 
 CTextbox::~CTextbox()
 {
+	delete m_curr;
+	delete m_bounds;
 }
 
 const Bounds& CTextbox::Bound() const
