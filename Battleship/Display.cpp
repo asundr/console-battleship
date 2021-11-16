@@ -100,18 +100,25 @@ namespace Display
 	void PrintTitle(const Bounds& _bounds, const std::string& _word, short _colour)
 	{
 		Point p = { _bounds.x + 1, _bounds.y + 1 };
-		int wordStart = ((_bounds.width - 1) - (7 * _word.length())) / 2; // centers the text
+		short wordStart = ((_bounds.width - 1) - (7 * (short)_word.length())) / 2; // centers the text
 		SetColour(_colour);
-		for (int i = 0; i < wordStart; ++i)
+		for (short i = 0; i < wordStart; ++i)
 		{
 			PrintLetterColumn(0, p, 0);
 			++p.x;
 		}
 		for (char c : _word)
 		{
-			for (int row = 0; row < 6; ++row)
+			for (short row = 0; row < 6; ++row)
 			{
-				PrintLetterColumn(Letter_Masks[c - 'A'], p, row);
+				if (c == ' ')
+				{
+					PrintLetterColumn(0, p, row);
+				}
+				else
+				{
+					PrintLetterColumn(Letter_Masks[c - 'A'], p, row);
+				}
 				++p.x;
 			}
 			PrintLetterColumn(0, p, 0);
